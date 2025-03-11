@@ -1,4 +1,4 @@
-# Project này là để trải nghiệm Go-backend-devops
+# Project này là để trải nghiệm Go-Backend-DevOps
 
 ### cấu trúc project:
 <pre><code>sport-shop/
@@ -15,8 +15,8 @@
 │   │   └── demo/
 │   │       ├── handler.go
 │   │       ├── models.go
-│   │       ├── repository.go    //Database access methods for user data
-│   │       └── user_case.go     //Core business logic for user operations
+│   │       ├── repository.go    //Database access methods
+│   │       └── user_case.go     //Core business logic
 │   └── initializer/
 │       ├── init_demo.go
 │       └── run.go
