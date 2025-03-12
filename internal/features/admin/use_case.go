@@ -14,7 +14,7 @@ type userCase struct {
 	repo Repository
 }
 
-func NewService(repo Repository) UserCase {
+func NewUserCase(repo Repository) UserCase {
 	return &userCase{
 		repo: repo,
 	}

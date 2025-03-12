@@ -12,7 +12,7 @@ import (
 func InitAdminRouter(r *http.ServeMux, db *sql.DB) {
 	fmt.Println("init admin router")
 	adminRepo := admin.NewRepository(db)
-	adminUseCase := admin.NewService(adminRepo)
+	adminUseCase := admin.NewUserCase(adminRepo)
 	adminHandler := admin.NewHandler(adminUseCase)
 
 	adminRouter := http.NewServeMux()
