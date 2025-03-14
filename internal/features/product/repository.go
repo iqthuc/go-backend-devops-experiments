@@ -49,20 +49,3 @@ func (r *repository) GetProducts(ctx context.Context) ([]Product, error) {
 func (r *repository) GetProductByID(id int) (Product, error) {
 	return Product{}, nil
 }
-
-// /// test
-// type mockRepository struct {
-// }
-
-// func NewMockRepository() Repository {
-// 	return &mockRepository{}
-// }
-// func (r *mockRepository) GetProducts() []Product {
-// 	products := []Product{}
-
-// 	return products
-// }
-
-// func (r *mockRepository) GetProductByID(id int) Product {
-// 	return Product{}
-// }

@@ -36,7 +36,7 @@ func (r *repository) GetProducts(ctx context.Context, limit int, offset int) ([]
 	`
 	rows, err := r.db.Query(query, limit, offset)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get products: %w", err)
+		return nil, fmt.Errorf("database query error: %w", err)
 	}
 	defer rows.Close()
 
@@ -50,7 +50,7 @@ func (r *repository) GetProducts(ctx context.Context, limit int, offset int) ([]
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to get products: %w", err)
+		return nil, fmt.Errorf("database query error: %w", err)
 	}
 	return products, nil
 }

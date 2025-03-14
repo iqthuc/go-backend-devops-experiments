@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load environment variables from .env file (for ash shell of Alpine Linux)
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+if [ -f dev.env ]; then
+    export $(grep -v '^#' dev.env | xargs)
 else
     echo "Error: .env file not found!"
     exit 1
@@ -23,17 +23,17 @@ if [ ! -f "$SQL_FILE" ]; then
 fi
 
 # Executed SQL file using psql command
-PGPASSWORD="root" psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f $SQL_FILE
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f $SQL_FILE
 
 # Check psql command status
 if [ $? -eq 0 ]; then
     # Add or update LAST_EXECUTED_SQL variable in .env file
-    if grep -q '^LAST_EXECUTED_SQL=' .env; then
+    if grep -q '^LAST_EXECUTED_SQL=' dev.env; then
         # If already exists, update the value
-        sed -i "s|^LAST_EXECUTED_SQL=.*|LAST_EXECUTED_SQL=$SQL_FILE|" .env
+        sed -i "s|^LAST_EXECUTED_SQL=.*|LAST_EXECUTED_SQL=\"$SQL_FILE\"|" dev.env
     else
         # If not exists, add the value to the end of the file
-        echo "LAST_EXECUTED_SQL=$SQL_FILE" >> .env
+        echo "LAST_EXECUTED_SQL=\"$SQL_FILE\"" >> dev.env
     fi
     echo "Successfully executed: $SQL_FILE"
 else
