@@ -45,9 +45,9 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 30px;
-                padding-bottom: 15px;
-                border-bottom: 1px solid var(--border);
+                margin-bottom: 20px;
+                padding-bottom: 0;
+                border-bottom: none;
             }
 
             h1 {
@@ -261,27 +261,503 @@
                     height: 35px;
                 }
             }
+
+            /* Cập nhật style cho header và filter */
+            .filter-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-bottom: 20px;
+                align-items: center;
+                justify-content: space-between;
+                background-color: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .category-menu {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .category-item {
+                padding: 8px 14px;
+                background-color: #f1f5f9;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                color: var(--text-dark);
+                text-decoration: none;
+                font-weight: 500;
+                transition: all 0.2s;
+                font-size: 14px;
+            }
+
+            .category-item:hover {
+                background-color: #e2e8f0;
+            }
+
+            .category-item.active {
+                background-color: var(--primary);
+                color: white;
+                border-color: var(--primary);
+            }
+
+            .search-container {
+                position: relative;
+                min-width: 250px;
+                max-width: 400px;
+            }
+
+            .search-input {
+                width: 100%;
+                padding: 10px 16px 10px 40px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                font-size: 14px;
+                background-color: #f8fafc;
+                transition: all 0.2s;
+            }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+                background-color: white;
+            }
+
+            .search-icon {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-light);
+            }
+
+            .filter-actions {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .card {
+                margin-top: 20px;
+            }
+
+            .table-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .table-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--text-dark);
+            }
+
+            /* Thêm style cho chức năng sắp xếp */
+            .sort-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-left: 15px;
+            }
+
+            .sort-label {
+                font-size: 14px;
+                color: var(--text-light);
+            }
+
+            .sort-select {
+                padding: 6px 12px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                background-color: white;
+                color: var(--text-dark);
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            .sort-select:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+            }
+
+            .table-actions {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .sortable {
+                cursor: pointer;
+                position: relative;
+            }
+
+            .sortable:hover {
+                background-color: #f1f5f9;
+            }
+
+            .sortable::after {
+                content: "\f0dc";
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                margin-left: 5px;
+                color: #cbd5e1;
+                font-size: 12px;
+            }
+
+            .sortable.asc::after {
+                content: "\f0de";
+                color: var(--primary);
+            }
+
+            .sortable.desc::after {
+                content: "\f0dd";
+                color: var(--primary);
+            }
+
+            /* Styles for advanced filters */
+            .advanced-filters {
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+                padding: 16px;
+                display: none;
+            }
+
+            .advanced-filters.active {
+                display: block;
+            }
+
+            .filter-row {
+                display: flex;
+                gap: 24px; /* Increased gap between filter groups */
+                margin-bottom: 16px;
+            }
+
+            .filter-group {
+                flex: 1;
+                max-width: calc(
+                    50% - 12px
+                ); /* Ensure only two items per row with spacing */
+                min-width: 250px;
+            }
+
+            .range-inputs {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .range-input {
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                font-size: 14px;
+                background-color: #f8fafc;
+                transition: all 0.2s;
+            }
+
+            .filter-select {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                background-color: #f8fafc;
+                color: var(--text-dark);
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            .filter-select:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+                background-color: white;
+            }
+
+            .filter-actions-row {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
+            .btn-outline {
+                background-color: white;
+                color: var(--text-dark);
+                border: 1px solid var(--border);
+            }
+
+            .btn-outline:hover {
+                background-color: #f1f5f9;
+            }
+
+            .btn-filter {
+                background-color: var(--primary);
+                color: white;
+            }
+
+            .btn-filter:hover {
+                background-color: var(--primary-hover);
+            }
+
+            .btn-toggle-filters {
+                background-color: white;
+                color: var(--text-dark);
+                border: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 8px 14px;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .btn-toggle-filters:hover {
+                background-color: #f1f5f9;
+            }
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 3px 8px;
+                border-radius: 9999px;
+                font-size: 12px;
+                font-weight: 500;
+                margin-left: 6px;
+            }
+
+            .badge-primary {
+                background-color: #dbeafe;
+                color: var(--primary);
+            }
+
+            .active-filters {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 16px;
+            }
+
+            .filter-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                background-color: #f1f5f9;
+                border-radius: 9999px;
+                font-size: 13px;
+                color: var(--text-dark);
+            }
+
+            .filter-tag-remove {
+                cursor: pointer;
+                color: var(--text-light);
+            }
+
+            .filter-tag-remove:hover {
+                color: var(--danger);
+            }
+
+            @media (max-width: 768px) {
+                .filter-container {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .filter-actions {
+                    flex-direction: column;
+                    align-items: stretch;
+                    width: 100%;
+                }
+
+                .search-container {
+                    width: 100%;
+                    max-width: none;
+                }
+
+                .table-actions {
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 10px;
+                    width: 100%;
+                }
+
+                .sort-container {
+                    margin-left: 0;
+                    margin-bottom: 10px;
+                }
+                .filter-row {
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                .filter-group {
+                    max-width: 100%;
+                    width: 100%;
+                }
+
+                .range-inputs {
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .range-input {
+                    flex: 1;
+                }
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="dashboard-header">
                 <h1>Product Management</h1>
-                <a href="/admin/products/new" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add New Product
-                </a>
+            </div>
+
+            <!-- Cập nhật thanh menu và tìm kiếm -->
+            <div class="filter-container">
+                <div class="category-menu">
+                    <a href="?category=all" class="category-item active"
+                        >All Products</a
+                    >
+                    <a href="?category=rackets" class="category-item"
+                        >Rackets</a
+                    >
+                    <a href="?category=shoes" class="category-item">Shoes</a>
+                    <a href="?category=shirts" class="category-item">Shirts</a>
+                    <a href="?category=pants" class="category-item">Pants</a>
+                </div>
+                <div class="filter-actions">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input
+                            type="text"
+                            class="search-input"
+                            placeholder="Search products..."
+                        />
+                    </div>
+                    <button class="btn-toggle-filters" id="toggleFilters">
+                        <i class="fas fa-filter"></i> Advanced Filters
+                        <span class="badge badge-primary">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Advanced Filters Section -->
+            <div class="advanced-filters" id="advancedFilters">
+                <form action="" method="get">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Price Range</label>
+                            <div class="range-inputs">
+                                <input
+                                    type="number"
+                                    name="min_price"
+                                    class="range-input"
+                                    placeholder="Min"
+                                    min="0"
+                                />
+                                <span class="range-separator">-</span>
+                                <input
+                                    type="number"
+                                    name="max_price"
+                                    class="range-input"
+                                    placeholder="Max"
+                                    min="0"
+                                />
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Stock Status</label>
+                            <select name="stock_status" class="filter-select">
+                                <option value="">All Stock Levels</option>
+                                <option value="low">Low Stock (< 5)</option>
+                                <option value="medium">
+                                    Medium Stock (5-19)
+                                </option>
+                                <option value="high">High Stock (20+)</option>
+                                <option value="out_of_stock">
+                                    Out of Stock
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-actions-row">
+                        <button type="reset" class="btn btn-outline">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                        <button type="submit" class="btn btn-filter">
+                            <i class="fas fa-check"></i> Apply Filters
+                        </button>
+                    </div>
+                </form>
+                <div class="active-filters">
+                    <!-- These will be dynamically added based on active filters -->
+                    <!-- Example:
+                    <div class="filter-tag">
+                        Price: 100,000₫ - 500,000₫
+                        <span class="filter-tag-remove"><i class="fas fa-times"></i></span>
+                    </div>
+                    <div class="filter-tag">
+                        Stock: High Stock (20+)
+                        <span class="filter-tag-remove"><i class="fas fa-times"></i></span>
+                    </div>
+                    -->
+                </div>
             </div>
 
             <div class="card">
+                <div class="table-header">
+                    <div class="table-title">Product List</div>
+                    <div class="table-actions">
+                        <!-- Thêm chức năng sắp xếp -->
+                        <div class="sort-container">
+                            <span class="sort-label">Sort by:</span>
+                            <select class="sort-select">
+                                <option value="name_asc">Name (A-Z)</option>
+                                <option value="name_desc">Name (Z-A)</option>
+                                <option value="price_asc">
+                                    Price (Low to High)
+                                </option>
+                                <option value="price_desc">
+                                    Price (High to Low)
+                                </option>
+                                <option value="stock_asc">
+                                    Stock (Low to High)
+                                </option>
+                                <option value="stock_desc">
+                                    Stock (High to Low)
+                                </option>
+                                <option value="id_desc">Newest</option>
+                                <option value="id_asc">Oldest</option>
+                            </select>
+                        </div>
+                        <!-- Di chuyển nút Add New Product ra đây -->
+                        <a href="/admin/products/new" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add New Product
+                        </a>
+                    </div>
+                </div>
                 {{if .}}
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Stock</th>
+                                <th class="sortable">ID</th>
+                                <th class="sortable asc">Product</th>
+                                <th class="sortable">Price</th>
+                                <th class="sortable">Stock</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -412,5 +888,16 @@
                 {{end}}
             </div>
         </div>
+
+        <script>
+            // Toggle Advanced Filters
+            document
+                .getElementById("toggleFilters")
+                .addEventListener("click", function () {
+                    const filtersSection =
+                        document.getElementById("advancedFilters");
+                    filtersSection.classList.toggle("active");
+                });
+        </script>
     </body>
 </html>
