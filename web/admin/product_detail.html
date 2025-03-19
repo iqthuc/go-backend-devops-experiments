@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Product Details | Admin Dashboard</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --primary: #2563eb;
+                --primary-hover: #1d4ed8;
+                --primary-light: #dbeafe;
+                --danger: #dc2626;
+                --danger-hover: #b91c1c;
+                --success: #16a34a;
+                --success-hover: #15803d;
+                --warning: #ca8a04;
+                --warning-hover: #a16207;
+                --text-dark: #1e293b;
+                --text-light: #64748b;
+                --bg-light: #f8fafc;
+                --border: #e2e8f0;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background-color: var(--bg-light);
+                color: var(--text-dark);
+                line-height: 1.6;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+
+            .breadcrumb {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 16px;
+                color: var(--text-light);
+                font-size: 14px;
+            }
+
+            .breadcrumb a {
+                color: var(--text-light);
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+
+            .breadcrumb a:hover {
+                color: var(--primary);
+            }
+
+            .breadcrumb-separator {
+                color: var(--text-light);
+            }
+
+            h1 {
+                font-size: 28px;
+                font-weight: 700;
+                color: var(--text-dark);
+            }
+
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                color: white;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                border: none;
+                cursor: pointer;
+            }
+
+            .btn-primary {
+                background-color: var(--primary);
+            }
+
+            .btn-primary:hover {
+                background-color: var(--primary-hover);
+            }
+
+            .btn-danger {
+                background-color: var(--danger);
+            }
+
+            .btn-danger:hover {
+                background-color: var(--danger-hover);
+            }
+
+            .btn-success {
+                background-color: var(--success);
+            }
+
+            .btn-success:hover {
+                background-color: var(--success-hover);
+            }
+
+            .btn-warning {
+                background-color: var(--warning);
+            }
+
+            .btn-warning:hover {
+                background-color: var(--warning-hover);
+            }
+
+            .btn-outline {
+                background-color: white;
+                color: var(--text-dark);
+                border: 1px solid var(--border);
+            }
+
+            .btn-outline:hover {
+                background-color: #f1f5f9;
+            }
+
+            .card {
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                margin-bottom: 24px;
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .card-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--text-dark);
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .product-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 24px;
+            }
+
+            .product-title-section {
+                flex: 1;
+            }
+
+            .product-title {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--text-dark);
+            }
+
+            .product-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 16px;
+                margin-bottom: 8px;
+            }
+
+            .product-meta-item {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: var(--text-light);
+                font-size: 14px;
+            }
+
+            .product-actions {
+                display: flex;
+                gap: 12px;
+            }
+
+            .product-info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 24px;
+                margin-bottom: 24px;
+            }
+
+            .info-card {
+                background-color: #f8fafc;
+                border-radius: 8px;
+                padding: 16px;
+                border: 1px solid var(--border);
+            }
+
+            .info-card-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--text-light);
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .info-card-value {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-dark);
+            }
+
+            .info-card-trend {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 14px;
+                margin-top: 4px;
+            }
+
+            .trend-up {
+                color: var(--success);
+            }
+
+            .trend-down {
+                color: var(--danger);
+            }
+
+            .tab-container {
+                margin-bottom: 24px;
+            }
+
+            .tabs {
+                display: flex;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 20px;
+            }
+
+            .tab {
+                padding: 12px 20px;
+                font-weight: 500;
+                color: var(--text-light);
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s;
+            }
+
+            .tab:hover {
+                color: var(--primary);
+            }
+
+            .tab.active {
+                color: var(--primary);
+                border-bottom-color: var(--primary);
+            }
+
+            .tab-content {
+                display: none;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th, td {
+                padding: 12px 16px;
+                text-align: left;
+                border-bottom: 1px solid var(--border);
+            }
+
+            th {
+                background-color: #f8fafc;
+                font-weight: 600;
+                color: var(--text-dark);
+            }
+
+            tr:hover {
+                background-color: #f1f5f9;
+            }
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 4px 8px;
+                border-radius: 9999px;
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .badge-success {
+                background-color: #dcfce7;
+                color: var(--success);
+            }
+
+            .badge-warning {
+                background-color: #fef9c3;
+                color: var(--warning);
+            }
+
+            .badge-danger {
+                background-color: #fee2e2;
+                color: var(--danger);
+            }
+
+            .badge-primary {
+                background-color: var(--primary-light);
+                color: var(--primary);
+            }
+
+            .stock-high {
+                color: var(--success);
+                font-weight: 600;
+            }
+
+            .stock-medium {
+                color: var(--warning);
+                font-weight: 600;
+            }
+
+            .stock-low {
+                color: var(--danger);
+                font-weight: 600;
+            }
+
+            /* .variant-color {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 1px solid var(--border);
+                margin-right: 8px;
+                vertical-align: middle;
+            } */
+
+            .description-content {
+                color: var(--text-dark);
+                line-height: 1.7;
+            }
+
+            .specs-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 16px;
+            }
+
+            .specs-table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .specs-table tr td:first-child {
+                width: 30%;
+                font-weight: 500;
+                color: var(--text-dark);
+                background-color: #f8fafc;
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                overflow-y: auto;
+            }
+
+            .modal-content {
+                background-color: white;
+                margin: 50px auto;
+                max-width: 600px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                position: relative;
+            }
+
+            .modal-header {
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .modal-title {
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+                color: var(--text-light);
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-footer {
+                padding: 16px 20px;
+                border-top: 1px solid var(--border);
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: var(--text-dark);
+            }
+
+            .form-control {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                font-size: 14px;
+                transition: all 0.2s;
+            }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+            }
+
+            .form-row {
+                display: flex;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+
+            .form-col {
+                flex: 1;
+            }
+
+            .color-preview {
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                border: 1px solid var(--border);
+                vertical-align: middle;
+                margin-left: 8px;
+            }
+
+            @media (max-width: 768px) {
+                .product-header {
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                .product-actions {
+                    width: 100%;
+                    justify-content: flex-start;
+                }
+
+                .form-row {
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                .tabs {
+                    overflow-x: auto;
+                    white-space: nowrap;
+                    padding-bottom: 5px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a>
+                <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                <a href="/admin/products">Products</a>
+                <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                <span>{{.ProductDetail.Name}}</span>
+            </div>
+
+            <div class="dashboard-header">
+                <h1>Product Details</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="product-header">
+                        <div class="product-title-section">
+                            <h2 class="product-title">{{.ProductDetail.Name}}</h2>
+                            <div class="product-meta">
+                                <div class="product-meta-item">
+                                    <i class="fas fa-tag"></i>
+                                    <span>ID: {{.ProductDetail.ID}}</span>
+                                </div>
+                                <div class="product-meta-item">
+                                    <i class="fas fa-folder"></i>
+                                    <span>Category: {{.ProductDetail.Category}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" id="editProductBtn">
+                                <i class="fas fa-edit"></i> Edit Product
+                            </button>
+                            <button class="btn btn-success" id="addVariantBtn">
+                                <i class="fas fa-plus"></i> Add Variant
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="product-info-grid">
+                        <div class="info-card">
+                            <div class="info-card-title">Total Variants</div>
+                            <div class="info-card-value">{{len .ProductVariants}}</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-title">Total Stock</div>
+                            <div class="info-card-value">{{.ProductDetail.TotalStock}}</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-title">Total Sold</div>
+                            <div class="info-card-value">{{.ProductDetail.TotalSold}}</div>
+                            <div class="info-card-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 12% from last month
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-container">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="variants">Variants</div>
+                            <div class="tab" data-tab="description">Description</div>
+                            <div class="tab" data-tab="specifications">Specifications</div>
+                        </div>
+
+                        <div class="tab-content active" id="variants-tab">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Variant ID</th>
+                                            <th>Name</th>
+                                            <th>Color</th>
+                                            <th>Size</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Sold</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{range .ProductVariants}}
+                                        <tr>
+                                            <td>{{.ID}}</td>
+                                            <td>{{.Name}}</td>
+                                            <td>
+                                                <span class="variant-color"></span>
+                                                {{.Color.String}}
+                                            </td>
+                                            <td>{{.Size.String}}</td>
+                                            <td>{{formatPrice .Price}}₫</td>
+                                            <td>
+                                                {{if ge .Stock 20}}
+                                                <span class="stock-high">{{.Stock}}</span>
+                                                {{else if ge .Stock 5}}
+                                                <span class="stock-medium">{{.Stock}}</span>
+                                                {{else}}
+                                                <span class="stock-low">{{.Stock}}</span>
+                                                {{end}}
+                                            </td>
+                                            <td>{{.Sold}}</td>
+                                            <td>
+                                                {{if gt .Stock 0}}
+                                                <span class="badge badge-success">In Stock</span>
+                                                {{else}}
+                                                <span class="badge badge-danger">Out of Stock</span>
+                                                {{end}}
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-outline edit-variant-btn" data-id="{{.ID}}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {{end}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="description-tab">
+                            <div class="description-content">
+                                Description
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="specifications-tab">
+                            <table class="specs-table">
+                                Specifications
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Product Modal -->
+        <div class="modal" id="editProductModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit Product</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <div class="form-group">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" class="form-control" name="name" value="{{.ProductDetail.Name}}" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-control" name="category">
+                                        <option value="rackets" {{if eq .ProductDetail.Category "rackets"}}selected{{end}}>Rackets</option>
+                                        <option value="shoes" {{if eq .ProductDetail.Category "shoes"}}selected{{end}}>Shoes</option>
+                                        <option value="shirts" {{if eq .ProductDetail.Category "shirts"}}selected{{end}}>Shirts</option>
+                                        <option value="pants" {{if eq .ProductDetail.Category "pants"}}selected{{end}}>Pants</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Base Price</label>
+                                    <input type="number" class="form-control" name="basePrice" value="{{.ProductDetail.Name}}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="5">{{.ProductDetail.Name}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Specifications</label>
+                            <div id="specifications-container">
+                                <div class="form-row spec-row">
+                                    <div class="form-col">
+                                        <input type="text" class="form-control" name="spec_name[]" placeholder="Name" value="">
+                                    </div>
+                                    <div class="form-col">
+                                        <input type="text" class="form-control" name="spec_value[]" placeholder="Value" value="">
+                                    </div>
+                                    <button type="button" class="btn btn-danger remove-spec">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline" id="add-spec-btn">
+                                <i class="fas fa-plus"></i> Add Specification
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline modal-close-btn">Cancel</button>
+                    <button class="btn btn-primary" id="saveProductBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Variant Modal -->
+        <div class="modal" id="variantModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="variantModalTitle">Add New Variant</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="variantForm">
+                        <input type="hidden" name="variant_id" id="variantId">
+                        <div class="form-group">
+                            <label class="form-label">Variant Name</label>
+                            <input type="text" class="form-control" name="variant_name" id="variantName" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Color</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="text" class="form-control" name="color_name" id="colorName" placeholder="Color name" required>
+                                        <input type="color" id="colorPicker" style="width: 40px; height: 40px;">
+                                        <input type="hidden" name="color_hex" id="colorHex">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Size</label>
+                                    <input type="text" class="form-control" name="size" id="variantSize" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Price</label>
+                                    <input type="number" class="form-control" name="price" id="variantPrice" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Stock</label>
+                                    <input type="number" class="form-control" name="stock" id="variantStock" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline modal-close-btn">Cancel</button>
+                    <button class="btn btn-primary" id="saveVariantBtn">Save Variant</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Tab switching functionality
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and content
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+
+            // Modal functionality
+            const openModal = (modalId) => {
+                document.getElementById(modalId).style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            };
+
+            const closeModal = (modalId) => {
+                document.getElementById(modalId).style.display = 'none';
+                document.body.style.overflow = 'auto';
+            };
+
+            // Close modals when clicking the X or Cancel button
+            document.querySelectorAll('.modal-close, .modal-close-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                    document.body.style.overflow = 'auto';
+                });
+            });
+
+            // Edit Product button
+            document.getElementById('editProductBtn').addEventListener('click', () => {
+                openModal('editProductModal');
+            });
+
+            // Add Variant button
+            document.getElementById('addVariantBtn').addEventListener('click', () => {
+                // Reset form
+                document.getElementById('variantForm').reset();
+                document.getElementById('variantId').value = '';
+                document.getElementById('variantModalTitle').textContent = 'Add New Variant';
+                openModal('variantModal');
+            });
+
+            // Edit Variant buttons
+            document.querySelectorAll('.edit-variant-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const variantId = btn.dataset.id;
+                    // In a real application, you would fetch the variant data here
+                    // For demo purposes, we'll just open the modal
+                    document.getElementById('variantId').value = variantId;
+                    document.getElementById('variantModalTitle').textContent = 'Edit Variant';
+
+                    // Populate form with variant data (this would come from your backend)
+                    // This is just placeholder code - you would replace with actual data
+                    const variant = {
+                        name: "Sample Variant " + variantId,
+                        colorName: "Blue",
+                        colorHex: "#0000ff",
+                        size: "M",
+                        price: 150000,
+                        stock: 25
+                    };
+
+                    document.getElementById('variantName').value = variant.name;
+                    document.getElementById('colorName').value = variant.colorName;
+                    document.getElementById('colorHex').value = variant.colorHex;
+                    document.getElementById('colorPicker').value = variant.colorHex;
+                    document.getElementById('variantSize').value = variant.size;
+                    document.getElementById('variantPrice').value = variant.price;
+                    document.getElementById('variantStock').value = variant.stock;
+
+                    openModal('variantModal');
+                });
+            });
+
+            // Color picker functionality
+            document.getElementById('colorPicker').addEventListener('input', (e) => {
+                document.getElementById('colorHex').value = e.target.value;
+            });
+
+            // Add specification row
+            document.getElementById('add-spec-btn').addEventListener('click', () => {
+                const container = document.getElementById('specifications-container');
+                const newRow = document.createElement('div');
+                newRow.className = 'form-row spec-row';
+                newRow.innerHTML = `
+                    <div class="form-col">
+
+                    <div class="form-col">
+                        <input type="text" class="form-control" name="spec_name[]" placeholder="Name">
+                    </div>
+                    <div class="form-col">
+                        <input type="text" class="form-control" name="spec_value[]" placeholder="Value">
+                    </div>
+                    <button type="button" class="btn btn-danger remove-spec">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(newRow);
+
+                // Add event listener to the new remove button
+                newRow.querySelector('.remove-spec').addEventListener('click', function() {
+                    this.closest('.spec-row').remove();
+                });
+            });
+
+            // Remove specification row
+            document.querySelectorAll('.remove-spec').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.spec-row').remove();
+                });
+            });
+
+            // Save Product button
+            document.getElementById('saveProductBtn').addEventListener('click', () => {
+                // Here you would handle the form submission
+                // For demo purposes, we'll just close the modal
+                alert('Product updated successfully!');
+                closeModal('editProductModal');
+            });
+
+            // Save Variant button
+            document.getElementById('saveVariantBtn').addEventListener('click', () => {
+                // Here you would handle the form submission
+                // For demo purposes, we'll just close the modal
+                const variantId = document.getElementById('variantId').value;
+                const message = variantId ? 'Variant updated successfully!' : 'New variant added successfully!';
+                alert(message);
+                closeModal('variantModal');
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

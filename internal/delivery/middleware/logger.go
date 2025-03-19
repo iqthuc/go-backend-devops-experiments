@@ -13,7 +13,6 @@ type responseWriterWrapper struct {
 
 func (rw *responseWriterWrapper) WriteHeader(code int) {
 	rw.statusCode = code
-	rw.ResponseWriter.WriteHeader(code)
 }
 
 func Logger(next http.Handler) http.Handler {
