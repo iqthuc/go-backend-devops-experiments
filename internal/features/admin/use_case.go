@@ -43,7 +43,9 @@ func (s *userCase) GetProducts(ctx context.Context, req PaginationRequest) (Pagi
 			TotalPages:   totalPages,
 			HasNext:      req.Page < totalPages,
 			HasPrevious:  req.Page > 1,
-			Filter:       Filter{CategoryId: req.CategoryId},
+		},
+		Filter: Filter{CategoryId: req.CategoryId,
+			SearchKey: req.SearchKey,
 		},
 	}
 

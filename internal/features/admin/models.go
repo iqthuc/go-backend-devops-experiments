@@ -16,24 +16,23 @@ type PaginationRequest struct {
 	CategoryId int    `json:"category_id"`
 	SearchKey  string `json:"search_key"`
 }
-
+type Filter struct {
+	CategoryId int    `json:"category_id"`
+	SearchKey  string `json:"search_key"`
+}
 type PaginationResponse struct {
 	Data       []Product `json:"data"`
 	Pagination Metadata  `json:"pagination"`
-}
-
-type Filter struct {
-	CategoryId int `json:"category_id"`
+	Filter     Filter    `json:"filter"`
 }
 
 type Metadata struct {
-	CurrentPage  int    `json:"current_page"`
-	PageSize     int    `json:"page_size"`
-	TotalRecords int    `json:"total_records"`
-	TotalPages   int    `json:"total_pages"`
-	HasNext      bool   `json:"has_next"`
-	HasPrevious  bool   `json:"has_previous"`
-	Filter       Filter `json:"filter"`
+	CurrentPage  int  `json:"current_page"`
+	PageSize     int  `json:"page_size"`
+	TotalRecords int  `json:"total_records"`
+	TotalPages   int  `json:"total_pages"`
+	HasNext      bool `json:"has_next"`
+	HasPrevious  bool `json:"has_previous"`
 }
 
 //-----------------//

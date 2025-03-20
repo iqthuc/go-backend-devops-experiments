@@ -679,34 +679,42 @@
             <!-- Cập nhật thanh menu và tìm kiếm -->
             <div class="filter-container">
                 <div class="category-menu">
-                    <a href="?page=1" class="category-item {{if eq .Pagination.Filter.CategoryId 0}}active{{end}}"
-                        >All Products</a
-                    >
                     <a
-                        href="?page=1&category_id=1"
-                        class="category-item {{if eq .Pagination.Filter.CategoryId 1}}active{{end}}"
-                        >Rackets</a
+                        href="?page=1{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
+                        class="category-item {{if eq .Filter.CategoryId 0}}active{{end}}"
                     >
+                        All Products
+                    </a>
                     <a
-                        href="?page=1&category_id=2"
-                        class="category-item {{if eq .Pagination.Filter.CategoryId 2}}active{{end}}"
-                        >Shoes</a
+                        href="?page=1&category_id=1{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
+                        class="category-item {{if eq .Filter.CategoryId 1}}active{{end}}"
                     >
+                        Rackets
+                    </a>
                     <a
-                        href="?page=1&category_id=3"
-                        class="category-item {{if eq .Pagination.Filter.CategoryId 3}}active{{end}}"
-                        >Shirts</a
+                        href="?page=1&category_id=2{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
+                        class="category-item {{if eq .Filter.CategoryId 2}}active{{end}}"
                     >
+                        Shoes
+                    </a>
                     <a
-                        href="?page=1&category_id=4"
-                        class="category-item {{if eq .Pagination.Filter.CategoryId 4}}active{{end}}"
-                        >Pants</a
+                        href="?page=1&category_id=3{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
+                        class="category-item {{if eq .Filter.CategoryId 3}}active{{end}}"
                     >
+                        Shirts
+                    </a>
                     <a
-                        href="?page=1&category_id=5"
-                        class="category-item {{if eq .Pagination.Filter.CategoryId 5}}active{{end}}"
-                        >Accessories</a
+                        href="?page=1&category_id=4{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
+                        class="category-item {{if eq .Filter.CategoryId 4}}active{{end}}"
                     >
+                        Pants
+                    </a>
+                    <a
+                        href="?page=1&category_id=5{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
+                        class="category-item {{if eq .Filter.CategoryId 5}}active{{end}}"
+                    >
+                        Accessories
+                    </a>
                 </div>
                 <div class="filter-actions">
                     <div class="search-container">
@@ -822,13 +830,12 @@
                         </tbody>
                     </table>
                 </div>
-
                 <div class="pagination-container">
                     <ul class="pagination">
                         {{if .Pagination.HasPrevious}}
                         <li>
                             <a
-                                href="?page=1&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                                href="?page=1&limit={{.Pagination.PageSize}}{{if ne .Filter.CategoryId 0}}&category_id={{.Filter.CategoryId}}{{end}}{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
                             >
                                 <i class="fas fa-angle-double-left"></i>
                             </a>
@@ -840,7 +847,7 @@
                         {{end}} {{if .Pagination.HasPrevious}}
                         <li>
                             <a
-                                href="?page={{subtract .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                                href="?page={{subtract .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Filter.CategoryId 0}}&category_id={{.Filter.CategoryId}}{{end}}{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
                             >
                                 <i class="fas fa-angle-left"></i>
                             </a>
@@ -855,7 +862,7 @@
                         {{else}}
                         <li>
                             <a
-                                href="?page={{$i}}&limit={{$.Pagination.PageSize}}{{if ne $.Pagination.Filter.CategoryId 0}}&category_id={{$.Pagination.Filter.CategoryId}}{{end}}"
+                                href="?page={{$i}}&limit={{$.Pagination.PageSize}}{{if ne $.Filter.CategoryId 0}}&category_id={{$.Filter.CategoryId}}{{end}}{{if $.Filter.SearchKey}}&search_key={{$.Filter.SearchKey}}{{end}}"
                             >
                                 {{$i}}
                             </a>
@@ -863,7 +870,7 @@
                         {{end}} {{end}} {{if .Pagination.HasNext}}
                         <li>
                             <a
-                                href="?page={{add .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                                href="?page={{add .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Filter.CategoryId 0}}&category_id={{.Filter.CategoryId}}{{end}}{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
                             >
                                 <i class="fas fa-angle-right"></i>
                             </a>
@@ -875,7 +882,7 @@
                         {{end}} {{if .Pagination.HasNext}}
                         <li>
                             <a
-                                href="?page={{.Pagination.TotalPages}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                                href="?page={{.Pagination.TotalPages}}&limit={{.Pagination.PageSize}}{{if ne .Filter.CategoryId 0}}&category_id={{.Filter.CategoryId}}{{end}}{{if .Filter.SearchKey}}&search_key={{.Filter.SearchKey}}{{end}}"
                             >
                                 <i class="fas fa-angle-double-right"></i>
                             </a>
