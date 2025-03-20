@@ -23,7 +23,7 @@ func NewUserCase(repo Repository) UserCase {
 func (s *userCase) GetProducts(ctx context.Context, req PaginationRequest) (PaginationResponse, error) {
 	offset := (req.Page - 1) * req.Limit
 
-	products, err := s.repo.GetProducts(ctx, req.Limit, offset, req.CategoryId)
+	products, err := s.repo.GetProducts(ctx, req.Limit, offset, req.CategoryId, req.SearchKey)
 	if err != nil {
 		return PaginationResponse{}, fmt.Errorf("failed to get products: %w", err)
 	}

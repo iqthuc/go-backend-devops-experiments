@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
 )
 
 type Repository interface {
-	GetProducts(ctx context.Context, limit int, offset int, category_id int) ([]Product, error)
+	GetProducts(ctx context.Context, limit int, offset int, category_id int, key_search string) ([]Product, error)
 	CountProducts(ctx context.Context, category_id int) (int, error)
 	GetProductByID(ctx context.Context, id int) (ProductDetail, error)
 	GetProductVariantsByID(ctx context.Context, id int) ([]ProductVariant, error)
@@ -25,13 +26,20 @@ func NewRepository(db *sql.DB) Repository {
 	}
 }
 
-func (r *repository) GetProducts(ctx context.Context, limit int, offset int, category_id int) ([]Product, error) {
+func (r *repository) GetProducts(
+	ctx context.Context,
+	limit int,
+	offset int,
+	category_id int,
+	search_key string,
+) ([]Product, error) {
 	query := `
 	SELECT p.id, name, COALESCE(SUM(stock_quantity),0),COALESCE(SUM(sold_quantity),0)
 	FROM products as p
 	LEFT JOIN product_variants as v
 	ON p.id = v.product_id
-	WHERE $3::int IS NULL OR category_id = $3
+	WHERE ($3::int IS NULL OR category_id = $3)
+	AND ($4::varchar IS NULL OR p.name ILIKE '%' || $4 || '%')
 	GROUP BY p.id
 	ORDER BY p.id
 	LIMIT $1
@@ -42,6 +50,7 @@ func (r *repository) GetProducts(ctx context.Context, limit int, offset int, cat
 		limit,
 		offset,
 		sql.NullInt64{Int64: int64(category_id), Valid: category_id != 0},
+		sql.NullString{String: search_key, Valid: search_key != ""},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("database query error: %w", err)
@@ -69,7 +78,6 @@ func (r *repository) CountProducts(ctx context.Context, category_id int) (int, e
 	FROM products
 	WHERE $1::int IS NULL OR category_id = $1
 	`
-	fmt.Println(category_id, "id")
 	err := r.db.QueryRowContext(
 		ctx,
 		query,
@@ -100,10 +108,9 @@ func (r *repository) GetProductByID(ctx context.Context, id int) (ProductDetail,
 	err := r.db.QueryRowContext(ctx, query, id).
 		Scan(&p.ID, &p.Name, &p.Category, &p.TotalStock, &p.TotalSold)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return ProductDetail{}, nil
 	}
-	fmt.Println(p)
 	return p, nil
 }
 

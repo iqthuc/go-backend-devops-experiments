@@ -454,6 +454,7 @@
             .btn-filter {
                 background-color: var(--primary);
                 color: white;
+                border: none;
             }
 
             .btn-filter:hover {
@@ -678,12 +679,34 @@
             <!-- Cập nhật thanh menu và tìm kiếm -->
             <div class="filter-container">
                 <div class="category-menu">
-                    <a href="?page=1" class="category-item {{if eq .Pagination.Filter.CategoryId 0}}active{{end}}">All Products</a>
-                    <a href="?page=1&category_id=1" class="category-item {{if eq .Pagination.Filter.CategoryId 1}}active{{end}}">Rackets</a>
-                    <a href="?page=1&category_id=2" class="category-item {{if eq .Pagination.Filter.CategoryId 2}}active{{end}}">Shoes</a>
-                    <a href="?page=1&category_id=3" class="category-item {{if eq .Pagination.Filter.CategoryId 3}}active{{end}}">Shirts</a>
-                    <a href="?page=1&category_id=4" class="category-item {{if eq .Pagination.Filter.CategoryId 4}}active{{end}}">Pants</a>
-                    <a href="?page=1&category_id=5" class="category-item {{if eq .Pagination.Filter.CategoryId 5}}active{{end}}">Accessories</a>
+                    <a href="?page=1" class="category-item {{if eq .Pagination.Filter.CategoryId 0}}active{{end}}"
+                        >All Products</a
+                    >
+                    <a
+                        href="?page=1&category_id=1"
+                        class="category-item {{if eq .Pagination.Filter.CategoryId 1}}active{{end}}"
+                        >Rackets</a
+                    >
+                    <a
+                        href="?page=1&category_id=2"
+                        class="category-item {{if eq .Pagination.Filter.CategoryId 2}}active{{end}}"
+                        >Shoes</a
+                    >
+                    <a
+                        href="?page=1&category_id=3"
+                        class="category-item {{if eq .Pagination.Filter.CategoryId 3}}active{{end}}"
+                        >Shirts</a
+                    >
+                    <a
+                        href="?page=1&category_id=4"
+                        class="category-item {{if eq .Pagination.Filter.CategoryId 4}}active{{end}}"
+                        >Pants</a
+                    >
+                    <a
+                        href="?page=1&category_id=5"
+                        class="category-item {{if eq .Pagination.Filter.CategoryId 5}}active{{end}}"
+                        >Accessories</a
+                    >
                 </div>
                 <div class="filter-actions">
                     <div class="search-container">
@@ -709,7 +732,7 @@
                                 <input type="number" name="max_price" class="range-input" placeholder="Max" min="0" />
                             </div>
                         </div>
-                        <div class="filter-group">
+                        <!-- <div class="filter-group">
                             <label class="filter-label">Stock Status</label>
                             <select name="stock_status" class="filter-select">
                                 <option value="">All Stock Levels</option>
@@ -718,7 +741,7 @@
                                 <option value="high">High Stock (20+)</option>
                                 <option value="out_of_stock">Out of Stock</option>
                             </select>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="filter-actions-row">
                         <button type="reset" class="btn btn-outline"><i class="fas fa-times"></i> Clear Filters</button>
@@ -752,10 +775,6 @@
                                 <option value="name_desc">Name (Z-A)</option>
                                 <option value="price_asc">Price (Low to High)</option>
                                 <option value="price_desc">Price (High to Low)</option>
-                                <option value="stock_asc">Stock (Low to High)</option>
-                                <option value="stock_desc">Stock (High to Low)</option>
-                                <option value="id_desc">Newest</option>
-                                <option value="id_asc">Oldest</option>
                             </select>
                         </div>
                         <!-- Di chuyển nút Add New Product ra đây -->
@@ -808,7 +827,9 @@
                     <ul class="pagination">
                         {{if .Pagination.HasPrevious}}
                         <li>
-                            <a href="?page=1&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}">
+                            <a
+                                href="?page=1&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                            >
                                 <i class="fas fa-angle-double-left"></i>
                             </a>
                         </li>
@@ -816,11 +837,11 @@
                         <li class="disabled">
                             <span><i class="fas fa-angle-double-left"></i></span>
                         </li>
-                        {{end}}
-                        
-                        {{if .Pagination.HasPrevious}}
+                        {{end}} {{if .Pagination.HasPrevious}}
                         <li>
-                            <a href="?page={{subtract .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}">
+                            <a
+                                href="?page={{subtract .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                            >
                                 <i class="fas fa-angle-left"></i>
                             </a>
                         </li>
@@ -828,23 +849,22 @@
                         <li class="disabled">
                             <span><i class="fas fa-angle-left"></i></span>
                         </li>
-                        {{end}}
-                        
-                        {{range $i := pageRange .Pagination.CurrentPage .Pagination.TotalPages}}
-                            {{if eq $i $.Pagination.CurrentPage}}
-                            <li class="active"><span>{{$i}}</span></li>
-                            {{else}}
-                            <li>
-                                <a href="?page={{$i}}&limit={{$.Pagination.PageSize}}{{if ne $.Pagination.Filter.CategoryId 0}}&category_id={{$.Pagination.Filter.CategoryId}}{{end}}">
-                                    {{$i}}
-                                </a>
-                            </li>
-                            {{end}}
-                        {{end}}
-                        
-                        {{if .Pagination.HasNext}}
+                        {{end}} {{range $i := pageRange .Pagination.CurrentPage .Pagination.TotalPages}} {{if eq $i
+                        $.Pagination.CurrentPage}}
+                        <li class="active"><span>{{$i}}</span></li>
+                        {{else}}
                         <li>
-                            <a href="?page={{add .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}">
+                            <a
+                                href="?page={{$i}}&limit={{$.Pagination.PageSize}}{{if ne $.Pagination.Filter.CategoryId 0}}&category_id={{$.Pagination.Filter.CategoryId}}{{end}}"
+                            >
+                                {{$i}}
+                            </a>
+                        </li>
+                        {{end}} {{end}} {{if .Pagination.HasNext}}
+                        <li>
+                            <a
+                                href="?page={{add .Pagination.CurrentPage 1}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                            >
                                 <i class="fas fa-angle-right"></i>
                             </a>
                         </li>
@@ -852,11 +872,11 @@
                         <li class="disabled">
                             <span><i class="fas fa-angle-right"></i></span>
                         </li>
-                        {{end}}
-                        
-                        {{if .Pagination.HasNext}}
+                        {{end}} {{if .Pagination.HasNext}}
                         <li>
-                            <a href="?page={{.Pagination.TotalPages}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}">
+                            <a
+                                href="?page={{.Pagination.TotalPages}}&limit={{.Pagination.PageSize}}{{if ne .Pagination.Filter.CategoryId 0}}&category_id={{.Pagination.Filter.CategoryId}}{{end}}"
+                            >
                                 <i class="fas fa-angle-double-right"></i>
                             </a>
                         </li>
@@ -985,6 +1005,46 @@
                         document.body.style.overflow = "auto";
                     }
                 });
+            });
+
+            const searchInput = document.querySelector(".search-input");
+
+            // Add event listener for key press
+            searchInput.addEventListener("keypress", function (event) {
+                // Check if the key pressed was Enter (key code 13)
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevent form submission if in a form
+
+                    // Get the current URL and create a new URL object
+                    const currentUrl = new URL(window.location.href);
+
+                    // Set the search parameter
+                    const searchValue = searchInput.value.trim();
+
+                    // Reset to page 1 when performing a new search
+                    currentUrl.searchParams.set("page", "1");
+
+                    if (searchValue) {
+                        // Add the search_key parameter
+                        currentUrl.searchParams.set("search_key", searchValue);
+                    } else {
+                        // Remove the search_key parameter if search is empty
+                        currentUrl.searchParams.delete("search_key");
+                    }
+
+                    // Navigate to the new URL
+                    window.location.href = currentUrl.toString();
+                }
+            });
+
+            // Initialize search input with current search parameter (if any)
+            document.addEventListener("DOMContentLoaded", function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                const searchKey = urlParams.get("search_key");
+
+                if (searchKey) {
+                    searchInput.value = searchKey;
+                }
             });
         </script>
     </body>

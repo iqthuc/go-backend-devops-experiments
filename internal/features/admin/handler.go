@@ -3,6 +3,7 @@ package admin
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -73,30 +74,30 @@ func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 		limit = 5
 	}
 
-	category_id, err := strconv.Atoi(r.URL.Query().Get("category_id"))
-
+	categoryID, err := strconv.Atoi(r.URL.Query().Get("category_id"))
 	if err != nil {
-		category_id = 0
+		categoryID = 0
 	}
+
+	searchKey := r.URL.Query().Get("search_key")
 
 	req := PaginationRequest{
 		Page:       page,
 		Limit:      limit,
-		CategoryId: category_id,
+		CategoryId: categoryID,
+		SearchKey:  searchKey,
 	}
 
 	response, err := h.userCase.GetProducts(r.Context(), req)
-	fmt.Println(response.Pagination.TotalPages, "pages")
-	fmt.Println(response.Pagination.TotalRecords, "records")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(w, "Failed to fetch products", http.StatusInternalServerError)
 		return
 	}
 
 	err = listProductTemplate.Execute(w, response)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(w, "Failed to render template", http.StatusInternalServerError)
 	}
 }
@@ -107,20 +108,20 @@ func (h *handler) GetProductDetails(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(w, "Something errors", http.StatusInternalServerError)
 		return
 	}
 
 	productDetails, err := h.userCase.GetProductDetails(r.Context(), id)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(w, "Failed to fetch products", http.StatusInternalServerError)
 		return
 	}
 
 	if err := productDetailTempl.Execute(w, productDetails); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(w, "Something errors", http.StatusInternalServerError)
 	}
 }

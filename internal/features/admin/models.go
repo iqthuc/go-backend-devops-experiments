@@ -11,9 +11,10 @@ type Product struct {
 }
 
 type PaginationRequest struct {
-	Page       int `json:"page"`
-	Limit      int `json:"limit"`
-	CategoryId int `json:"category_id"`
+	Page       int    `json:"page"`
+	Limit      int    `json:"limit"`
+	CategoryId int    `json:"category_id"`
+	SearchKey  string `json:"search_key"`
 }
 
 type PaginationResponse struct {
