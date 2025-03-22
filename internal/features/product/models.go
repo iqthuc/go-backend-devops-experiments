@@ -1,14 +1,17 @@
 package product
 
+import "encoding/json"
+
 const (
-	perPageDefault = 2
+	perPageDefault = 5
 )
 
 type Product struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Stock int    `json:"stock"`
-	Sold  int    `json:"sold"`
+	ID        int     `json:"id"`
+	Name      string  `json:"name"`
+	BasePrice float64 `json:"base_price"`
+	Stock     int     `json:"stock"`
+	Sold      int     `json:"sold"`
 }
 
 // TotalCount is necessary because the returned products are limited by pagination.
@@ -24,14 +27,37 @@ type ProductsResponse struct {
 	Pagination Pagination `json:"pagination"`
 }
 
+func (pr ProductsResponse) MarshalJSON() ([]byte, error) {
+	type Alias ProductsResponse
+	aux := &struct {
+		Filters *Filters `json:"filters,omitempty"`
+		SortBy  *SortBy  `json:"sort_by,omitempty"`
+		*Alias
+	}{
+		Filters: &pr.Filters,
+		SortBy:  &pr.SortBy,
+		Alias:   (*Alias)(&pr),
+	}
+	if pr.Filters == (Filters{}) {
+		aux.Filters = nil
+	}
+	if pr.SortBy == (SortBy{}) {
+		aux.SortBy = nil
+	}
+
+	return json.Marshal(aux)
+}
+
 type Filters struct {
-	Keyword    string `json:"key_word"`
-	CategoryID int    `json:"category_id"`
+	Keyword    string  `json:"key_word,omitempty"`
+	CategoryID int     `json:"category_id,omitempty"`
+	PriceMin   float64 `json:"price_min,omitempty"`
+	PriceMax   float64 `json:"price_max,omitempty"`
 }
 
 type SortBy struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field,omitempty"`
+	Order string `json:"order,omitempty"`
 }
 
 type Pagination struct {

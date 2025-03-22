@@ -3,12 +3,14 @@ package product
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
 )
 
 type GetProductsRequestParams struct {
-	page       int
-	searchKey  string
-	categoryId int
+	page    int
+	Filters Filters
+	SortBy  SortBy
 }
 
 type UserCase interface {
@@ -27,24 +29,39 @@ func NewService(repo Repository) UserCase {
 }
 
 func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsRequestParams) (ProductsResponse, error) {
+	//Input validation and transformation
 	perPage := perPageDefault
-	queryParams := GetProductsQueryPrarams{
-		offset:     (requestParams.page - 1) * perPage,
-		limit:      perPage,
-		searchKey:  requestParams.searchKey,
-		categoryId: requestParams.categoryId,
+	offset := max((requestParams.page-1), 0) * perPage
+	validSortFields := map[string]bool{
+		"id":         true,
+		"name":       true,
+		"base_price": true,
 	}
+	if !validSortFields[requestParams.SortBy.Field] {
+		requestParams.SortBy.Field = ""
+	}
+	if strings.ToUpper(requestParams.SortBy.Order) != "DESC" {
+		requestParams.SortBy.Order = ""
+	}
+
+	queryParams := GetProductsQueryParams{
+		offset:  offset,
+		limit:   perPage,
+		Filters: requestParams.Filters,
+		SortBy:  requestParams.SortBy,
+	}
+	log.Println(queryParams)
 	result, err := s.repo.GetProducts(ctx, queryParams)
 	if err != nil {
 		return ProductsResponse{}, fmt.Errorf("failed to get products: %w", err)
 	}
 
 	// handle pagination
-	currentpage := requestParams.page
+	currentpage := max(requestParams.page, 1)
 	total := result.totalCount
-	totalPages := result.totalCount / perPage
-	prevPage := max(requestParams.page-1, 0)
-	nextPage := min(requestParams.page+1, totalPages)
+	totalPages := (result.totalCount + perPage - 1) / perPage
+	prevPage := max(currentpage-1, 0)
+	nextPage := min(currentpage+1, totalPages)
 	pagination := Pagination{
 		CurrentPage: currentpage,
 		Total:       total,
@@ -55,10 +72,9 @@ func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsReq
 	}
 
 	response := ProductsResponse{
-		Products: result.products,
-		Filters: Filters{
-			Keyword: requestParams.searchKey,
-		},
+		Products:   result.products,
+		Filters:    requestParams.Filters,
+		SortBy:     requestParams.SortBy,
 		Pagination: pagination,
 	}
 

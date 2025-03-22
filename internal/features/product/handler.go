@@ -20,9 +20,17 @@ func NewHandler(service UserCase) *handler {
 
 func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	requestParams := GetProductsRequestParams{
-		page:       utils.ParseQueryInt(r, "page", 1),
-		searchKey:  utils.ParseQueryString(r, "search_key"),
-		categoryId: utils.ParseQueryInt(r, "category_id", 0),
+		page: utils.ParseQueryParam[int](r, "page"),
+		Filters: Filters{
+			Keyword:    utils.ParseQueryParam[string](r, "key_word"),
+			CategoryID: utils.ParseQueryParam[int](r, "category_id"),
+			PriceMin:   utils.ParseQueryParam[float64](r, "price_min"),
+			PriceMax:   utils.ParseQueryParam[float64](r, "price_max"),
+		},
+		SortBy: SortBy{
+			Field: utils.ParseQueryParam[string](r, "field"),
+			Order: utils.ParseQueryParam[string](r, "order"),
+		},
 	}
 
 	result, err := h.userCase.GetProducts(r.Context(), requestParams)
