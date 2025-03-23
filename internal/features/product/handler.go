@@ -1,18 +1,23 @@
 package product
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/iqthuc/sport-shop/utils"
 )
+
+type Handler interface {
+	GetProducts(w http.ResponseWriter, r *http.Request)
+	GetProductDetails(w http.ResponseWriter, r *http.Request)
+}
 
 type handler struct {
 	userCase UserCase
 }
 
-func NewHandler(service UserCase) *handler {
+func NewHandler(service UserCase) Handler {
 	return &handler{
 		userCase: service,
 	}
@@ -43,7 +48,19 @@ func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 
 	utils.SuccessJsonResponse(w, result, "ok")
 }
+func (h *handler) GetProductDetails(w http.ResponseWriter, r *http.Request) {
+	product_id, err := strconv.Atoi(r.PathValue("id"))
 
-func (h *handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "create product")
+	if err != nil {
+		log.Println(err)
+		utils.ErrorJsonResponse(w, http.StatusInternalServerError, "Something errors")
+		return
+	}
+	productDetails, err := h.userCase.GetProductDetails(r.Context(), product_id)
+	if err != nil {
+		log.Println(err)
+		utils.ErrorJsonResponse(w, http.StatusInternalServerError, "Failed to fetch products")
+		return
+	}
+	utils.SuccessJsonResponse(w, productDetails, "ok")
 }

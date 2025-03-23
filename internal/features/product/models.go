@@ -1,13 +1,15 @@
 package product
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 const (
 	perPageDefault = 5
 )
 
 type Product struct {
-	ID        int     `json:"id"`
+	ID        int32   `json:"id"`
 	Name      string  `json:"name"`
 	BasePrice float64 `json:"base_price"`
 	Stock     int     `json:"stock"`
@@ -27,7 +29,7 @@ type ProductsResponse struct {
 	Pagination Pagination `json:"pagination"`
 }
 
-func (pr ProductsResponse) MarshalJSON() ([]byte, error) {
+func (pr *ProductsResponse) MarshalJSON() ([]byte, error) {
 	type Alias ProductsResponse
 	aux := &struct {
 		Filters *Filters `json:"filters,omitempty"`
@@ -36,7 +38,7 @@ func (pr ProductsResponse) MarshalJSON() ([]byte, error) {
 	}{
 		Filters: &pr.Filters,
 		SortBy:  &pr.SortBy,
-		Alias:   (*Alias)(&pr),
+		Alias:   (*Alias)(pr),
 	}
 	if pr.Filters == (Filters{}) {
 		aux.Filters = nil
@@ -67,4 +69,25 @@ type Pagination struct {
 	PerPage     int `json:"per_page"`
 	NextPage    int `json:"next_page"`
 	PrevPage    int `json:"prev_page"`
+}
+
+// // Product details
+type ProductDetailsResponse struct {
+	ProductDetail   ProductDetail    `json:"product_details"`
+	ProductVariants []ProductVariant `json:"product_variant"`
+}
+
+type ProductDetail struct {
+	Product
+	Category string `json:"category"`
+}
+
+type ProductVariant struct {
+	ID    int64   `json:"id"`
+	Name  string  `json:"name"`
+	Color *string `json:"color"`
+	Size  *string `json:"size"`
+	Price float64 `json:"price"`
+	Stock int     `json:"stock"`
+	Sold  int     `json:"sold"`
 }

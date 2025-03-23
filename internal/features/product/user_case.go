@@ -3,7 +3,6 @@ package product
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -15,7 +14,7 @@ type GetProductsRequestParams struct {
 
 type UserCase interface {
 	GetProducts(ctx context.Context, requestParams GetProductsRequestParams) (ProductsResponse, error)
-	GetProductByID(id int) Product
+	GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error)
 }
 
 type userCase struct {
@@ -50,10 +49,9 @@ func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsReq
 		Filters: requestParams.Filters,
 		SortBy:  requestParams.SortBy,
 	}
-	log.Println(queryParams)
 	result, err := s.repo.GetProducts(ctx, queryParams)
 	if err != nil {
-		return ProductsResponse{}, fmt.Errorf("failed to get products: %w", err)
+		return ProductsResponse{}, fmt.Errorf("Failed to get products: %w", err)
 	}
 
 	// handle pagination
@@ -81,7 +79,18 @@ func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsReq
 	return response, nil
 }
 
-func (s *userCase) GetProductByID(id int) Product {
-	product := s.GetProductByID(id)
-	return product
+func (s *userCase) GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error) {
+	var data ProductDetailsResponse
+	productDetail, err := s.repo.GetProductByID(ctx, id)
+	if err != nil {
+		return ProductDetailsResponse{}, fmt.Errorf("Failed to get product by id: %w", err)
+	}
+
+	productVariants, err := s.repo.GetProductVariantsByID(ctx, id)
+	if err != nil {
+		return ProductDetailsResponse{}, fmt.Errorf("Failed to get product variants by id: %w", err)
+	}
+	data.ProductDetail = productDetail
+	data.ProductVariants = productVariants
+	return data, err
 }
