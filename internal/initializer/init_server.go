@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/iqthuc/sport-shop/config"
@@ -19,6 +20,18 @@ func InitServer() {
 
 	router.InitAdminRouter(r, db)
 	router.InitProductRouter(r, db)
+	router.IntAuthRouter(r, db)
 
-	http.ListenAndServe(config.SERVER_ADDRESS, r)
+	server := &http.Server{
+		Addr:    config.SERVER_ADDRESS,
+		Handler: r,
+	}
+	ln, err := net.Listen("tcp", config.SERVER_ADDRESS)
+	if err != nil {
+		log.Fatalf("Failed to bind address: %v", err)
+	}
+	log.Println("Server started successfully on", config.SERVER_ADDRESS)
+	if err := server.Serve(ln); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

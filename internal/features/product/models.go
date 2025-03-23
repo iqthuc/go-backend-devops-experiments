@@ -9,11 +9,11 @@ const (
 )
 
 type Product struct {
-	ID        int32   `json:"id"`
+	ID        int64   `json:"id"`
 	Name      string  `json:"name"`
 	BasePrice float64 `json:"base_price"`
-	Stock     int     `json:"stock"`
-	Sold      int     `json:"sold"`
+	Stock     int32   `json:"stock"`
+	Sold      int32   `json:"sold"`
 }
 
 // TotalCount is necessary because the returned products are limited by pagination.

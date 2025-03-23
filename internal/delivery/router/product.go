@@ -9,7 +9,6 @@ import (
 )
 
 func InitProductRouter(r *http.ServeMux, db *sql.DB) {
-
 	productRepo := product.NewRepository(db)
 	productUseCase := product.NewService(productRepo)
 	productHandler := product.NewHandler(productUseCase)
