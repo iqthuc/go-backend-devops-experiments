@@ -1,6 +1,9 @@
 package auth
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type User struct {
 	id           int64
@@ -21,4 +24,35 @@ type RegisterRequest struct {
 	Password    string `json:"password"`
 	FullName    string `json:"full_name"`
 	PhoneNumber string `json:"phone_number"`
+}
+
+type LoginRequest struct {
+	Identifier string `json:"identifier"`
+	Password   string `json:"password"`
+}
+
+type LoginStatus int
+
+const (
+	LoginStatusSuccess LoginStatus = iota
+	LoginStatusUserNotFound
+	LoginStatusInvalidPassword
+	LoginStatusSystemError
+)
+
+type loginUserReponse struct {
+	AccessToken string `json:"access_token"`
+}
+
+type userInfoResponse struct {
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	FullName    string `json:"full_name"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+var Err = struct {
+	ErrUserNotFound error
+}{
+	ErrUserNotFound: errors.New("user not found"),
 }

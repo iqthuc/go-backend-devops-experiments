@@ -3,12 +3,14 @@ package auth
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
 type Repository interface {
 	CreateUser(ctx context.Context, user *User) error
-	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserByUsernamOrEmail(ctx context.Context, username, email string) (*User, error)
+	GetUserByID(ctx context.Context, id int64) (*User, error)
 }
 
 type repository struct {
@@ -38,14 +40,15 @@ func (r *repository) CreateUser(ctx context.Context, user *User) error {
 	return err
 }
 
-func (r *repository) GetUserByEmail(ctx context.Context, email string) (User, error) {
+func (r *repository) GetUserByUsernamOrEmail(ctx context.Context, username, email string) (*User, error) {
 	query := `
 		SELECT id, username, email, password_hash, full_name, phone_number, is_active, created_at, updated_at, deleted_at
 		FROM users
-		WHERE email = $1
+		WHERE (username = $1 OR email = $2)
+		AND deleted_at IS NULL
 	`
-	var user User
-	err := r.db.QueryRowContext(ctx, query, email).Scan(
+	user := &User{}
+	err := r.db.QueryRowContext(ctx, query, username, email).Scan(
 		&user.id,
 		&user.username,
 		&user.email,
@@ -57,8 +60,40 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (User, er
 		&user.updatedAt,
 		&user.deletedAt,
 	)
-	if err != nil {
-		return User{}, fmt.Errorf("database query error: %w", err)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
 	}
-	return User{}, nil
+	if err != nil {
+		return nil, fmt.Errorf("database query error: %w", err)
+	}
+	return user, nil
+}
+
+func (r *repository) GetUserByID(ctx context.Context, id int64) (*User, error) {
+	query := `
+		SELECT id, username, email, password_hash, full_name, phone_number, is_active, created_at, updated_at, deleted_at
+		FROM users
+		WHERE (id = $1)
+		AND deleted_at IS NULL
+	`
+	user := &User{}
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&user.id,
+		&user.username,
+		&user.email,
+		&user.passwordHash,
+		&user.fullName,
+		&user.phoneNumber,
+		&user.isActive,
+		&user.createdAt,
+		&user.updatedAt,
+		&user.deletedAt,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("database query error: %w", err)
+	}
+	return user, nil
 }

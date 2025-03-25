@@ -17,6 +17,6 @@ func InitAdminRouter(r *http.ServeMux, db *sql.DB) {
 	adminRouter.HandleFunc("GET /products/{id}", adminHandler.GetProductDetails)
 	adminRouter.HandleFunc("GET /products", adminHandler.GetProducts)
 
-	middlewares := middleware.Group(middleware.Logger)
+	middlewares := middleware.Apply(middleware.Logger)
 	r.Handle("/admin/", http.StripPrefix("/admin", middlewares(adminRouter)))
 }

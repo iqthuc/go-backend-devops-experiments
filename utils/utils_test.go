@@ -10,20 +10,14 @@ func TestHashPassword(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	isMatch, err := VerifyPassword(password, hashedPassword)
+	err = VerifyPassword(password, hashedPassword)
 	if err != nil {
 		t.Error(err)
-	}
-	if !isMatch {
-		t.Error("hash function's incorrect")
 	}
 
 	wrongPassword := RandomString(12)
-	isMatch, err = VerifyPassword(wrongPassword, hashedPassword)
-	if err != nil {
+	err = VerifyPassword(wrongPassword, hashedPassword)
+	if err == nil {
 		t.Error(err)
-	}
-	if isMatch {
-		t.Error("hash function's incorrect")
 	}
 }

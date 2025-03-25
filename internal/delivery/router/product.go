@@ -17,7 +17,7 @@ func InitProductRouter(r *http.ServeMux, db *sql.DB) {
 	productRouter.HandleFunc("GET /", productHandler.GetProducts)
 	productRouter.HandleFunc("GET /{id}", productHandler.GetProductDetails)
 
-	middlewares := middleware.Group(middleware.Logger)
+	middlewares := middleware.Apply(middleware.Logger)
 	r.Handle("/api/products/", http.StripPrefix("/api/products", middlewares(productRouter)))
 
 }

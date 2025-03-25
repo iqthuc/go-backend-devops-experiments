@@ -32,19 +32,22 @@ func GenerateFromPassword(password string) (string, error) {
 	return fmt.Sprintf("%s$%s", base64.StdEncoding.EncodeToString(salt), base64.StdEncoding.EncodeToString(hash[:])), nil
 }
 
-func VerifyPassword(inputPassword string, storeHash string) (bool, error) {
+func VerifyPassword(inputPassword string, storeHash string) error {
 	parts := strings.Split(storeHash, "$")
 	if len(parts) != 2 {
-		return false, errors.New("Invalid hash format")
+		return errors.New("invalid hash format")
 	}
 	salt, err := base64.StdEncoding.DecodeString(parts[0])
 	if err != nil {
-		return false, err
+		return fmt.Errorf("failed to decode salt: %w", err)
 	}
 	expectedHash, err := base64.StdEncoding.DecodeString(parts[1])
 	if err != nil {
-		return false, nil
+		return fmt.Errorf("failed to decode hash: %w", err)
 	}
 	inputHash := sha256.Sum256(append(salt, []byte(inputPassword)...))
-	return subtle.ConstantTimeCompare(inputHash[:], expectedHash) == 1, nil
+	if subtle.ConstantTimeCompare(inputHash[:], expectedHash) != 1 {
+		return errors.New("password does not match")
+	}
+	return nil
 }

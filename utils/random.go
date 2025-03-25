@@ -1,7 +1,8 @@
 package utils
 
 import (
-	"fmt"
+	"encoding/base64"
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -20,6 +21,11 @@ func RandomString(length int) string {
 	return sb.String()
 }
 
-func main() {
-	fmt.Println(RandomString(10)) // Ví dụ: "aB3dEfGhIj"
+func GenerateSecretKey() string {
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	if err != nil {
+		log.Fatal("Failed to generate secret key:", err)
+	}
+	return base64.StdEncoding.EncodeToString(key)
 }
