@@ -18,12 +18,14 @@ type UserCase interface {
 }
 
 type userCase struct {
-	repo Repository
+	repo  Repository
+	maker token.Maker
 }
 
-func NewUserCase(repo Repository) UserCase {
+func NewUserCase(repo Repository, maker token.Maker) UserCase {
 	return &userCase{
-		repo: repo,
+		repo:  repo,
+		maker: maker,
 	}
 }
 
@@ -54,11 +56,7 @@ func (u *userCase) Login(ctx context.Context, rq LoginRequest) (*loginUserRepons
 		return nil, LoginStatusInvalidPassword, nil
 	}
 
-	claims := token.JWTClaims{
-		UserId: user.id,
-		Exp:    time.Now().Add(time.Hour * 1),
-	}
-	token, err := token.EncodeJWT(claims)
+	token, err := u.maker.CreateToken(user.id, time.Hour)
 
 	response := &loginUserReponse{
 		AccessToken: token,

@@ -5,27 +5,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
-	"os"
 	"strings"
 	"time"
-
-	"github.com/iqthuc/sport-shop/config"
 )
-
-var JWTErrors = struct {
-	ErrInvalidToken error
-	ErrExpiredToken error
-}{
-	ErrInvalidToken: errors.New("invalid token"),
-	ErrExpiredToken: errors.New("token expired"),
-}
-var secretKey = os.Getenv(config.Env.SecretKey)
-
-type JWTClaims struct {
-	UserId int64     `json:"user_id"`
-	Exp    time.Time `json:"exp"`
-}
 
 func generateHMAC(data, secret string) string {
 	h := hmac.New(sha256.New, []byte(secret))
@@ -33,7 +15,7 @@ func generateHMAC(data, secret string) string {
 	return base64.RawURLEncoding.EncodeToString(h.Sum(nil))
 }
 
-func EncodeJWT(claims JWTClaims) (string, error) {
+func EncodeJWT(claims Payload, secretKey string) (string, error) {
 	header := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
 
 	payloadBytes, err := json.Marshal(claims)
@@ -46,16 +28,16 @@ func EncodeJWT(claims JWTClaims) (string, error) {
 	return header + "." + payload + "." + signature, nil
 }
 
-func DecodeJWT(token string) (*JWTClaims, error) {
+func DecodeJWT(token string, secretKey string) (*Payload, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		return nil, JWTErrors.ErrInvalidToken
+		return nil, Errors.InvalidToken
 	}
 
 	headerAndPayload := parts[0] + "." + parts[1]
 	signature, err := base64.RawURLEncoding.DecodeString(parts[2])
 	if err != nil {
-		return nil, JWTErrors.ErrInvalidToken
+		return nil, Errors.InvalidToken
 	}
 
 	// tạo lại chữ kí từ header + payload + secretKey
@@ -65,24 +47,23 @@ func DecodeJWT(token string) (*JWTClaims, error) {
 	expectedSignature := h.Sum(nil)
 
 	if !hmac.Equal(signature, expectedSignature) {
-		return nil, JWTErrors.ErrInvalidToken
+		return nil, Errors.InvalidToken
 	}
 
 	// ok, decode payload
 
 	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
 	if err != nil {
-		return nil, JWTErrors.ErrInvalidToken
+		return nil, Errors.InvalidToken
 	}
 
-	var claims JWTClaims
+	var claims Payload
 	if err := json.Unmarshal(payload, &claims); err != nil {
-		return nil, JWTErrors.ErrInvalidToken
+		return nil, Errors.InvalidToken
 	}
 
 	if time.Now().After(claims.Exp) {
-		return nil, JWTErrors.ErrExpiredToken
+		return nil, Errors.ExpiredToken
 	}
 	return &claims, nil
-
 }

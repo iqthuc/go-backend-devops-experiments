@@ -1,7 +1,9 @@
 package config
 
 var Env = struct {
-	SecretKey string
+	SecretKey     string
+	ServerAddress string
 }{
-	SecretKey: "SECRETKEY",
+	SecretKey:     "SECRETKEY",
+	ServerAddress: "SERVER_ADDRESS",
 }

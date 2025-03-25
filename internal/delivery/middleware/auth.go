@@ -10,7 +10,15 @@ import (
 	"github.com/iqthuc/sport-shop/utils"
 )
 
-func Auth(next http.Handler) http.Handler {
+type AuthMiddleware struct {
+	maker token.Maker
+}
+
+func NewAuthMiddleware(maker token.Maker) *AuthMiddleware {
+	return &AuthMiddleware{maker: maker}
+}
+
+func (a *AuthMiddleware) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
@@ -24,10 +32,10 @@ func Auth(next http.Handler) http.Handler {
 			return
 		}
 		// Giải mã token
-		claims, err := token.DecodeJWT(tokenParts[1])
+		claims, err := a.maker.VerifyToken(tokenParts[1])
 
 		if err != nil {
-			if errors.Is(err, token.JWTErrors.ErrExpiredToken) {
+			if errors.Is(err, token.Errors.ExpiredToken) {
 				utils.ErrorJsonResponse(w, http.StatusUnauthorized, "Expired token")
 				return
 			}
