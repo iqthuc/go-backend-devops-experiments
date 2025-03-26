@@ -40,19 +40,32 @@ const (
 	LoginStatusSystemError
 )
 
-type loginUserReponse struct {
-	AccessToken string `json:"access_token"`
-}
-
-type userInfoResponse struct {
-	Username    string `json:"username"`
-	Email       string `json:"email"`
-	FullName    string `json:"full_name"`
-	PhoneNumber string `json:"phone_number"`
+type loginResult struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 var Err = struct {
 	ErrUserNotFound error
 }{
 	ErrUserNotFound: errors.New("user not found"),
+}
+
+type getUserInfoResult struct {
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	FullName    string `json:"full_name"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+type refreshTokenRequest struct {
+	UserID     int64     `json:"user_id"`
+	Token      string    `json:"token"`
+	Expires_at time.Time `json:"expires_at"`
+}
+
+type getRefreshTokenResult struct {
+	UserID     int64
+	Token      string
+	Expires_at time.Time
 }

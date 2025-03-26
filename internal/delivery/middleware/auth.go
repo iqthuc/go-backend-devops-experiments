@@ -31,9 +31,12 @@ func (a *AuthMiddleware) Auth(next http.Handler) http.Handler {
 			utils.ErrorJsonResponse(w, http.StatusUnauthorized, "Invalid authorization format")
 			return
 		}
-		// Giải mã token
-		claims, err := a.maker.VerifyToken(tokenParts[1])
 
+		claims, err := a.maker.VerifyToken(tokenParts[1])
+		if claims.GetTokenType() != token.Access {
+			utils.ErrorJsonResponse(w, http.StatusUnauthorized, "Invalid token")
+			return
+		}
 		if err != nil {
 			if errors.Is(err, token.Errors.ExpiredToken) {
 				utils.ErrorJsonResponse(w, http.StatusUnauthorized, "Expired token")
@@ -42,7 +45,7 @@ func (a *AuthMiddleware) Auth(next http.Handler) http.Handler {
 			utils.ErrorJsonResponse(w, http.StatusUnauthorized, "Invalid token")
 			return
 		}
-		ctx := context.WithValue(r.Context(), ContextKey.UserID, claims.UserId)
+		ctx := context.WithValue(r.Context(), ContextKey.UserID, claims.GetUserID())
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

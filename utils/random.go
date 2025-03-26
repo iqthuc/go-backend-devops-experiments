@@ -1,24 +1,20 @@
 package utils
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"log"
-	"math/rand"
-	"strings"
-	"time"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
-
 func RandomString(length int) string {
-	var sb strings.Builder
-	sb.Grow(length)
-	for range length {
-		sb.WriteByte(charset[seededRand.Intn(len(charset))])
+	str := make([]byte, 32)
+	_, err := rand.Read(str)
+	if err != nil {
+		log.Fatal("Failed to generate random string:", err)
 	}
-	return sb.String()
+	return string(str)
 }
 
 func GenerateSecretKey() string {

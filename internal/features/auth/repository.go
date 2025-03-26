@@ -5,12 +5,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 type Repository interface {
 	CreateUser(ctx context.Context, user *User) error
 	GetUserByUsernamOrEmail(ctx context.Context, username, email string) (*User, error)
 	GetUserByID(ctx context.Context, id int64) (*User, error)
+	StoreRefreshToken(ctx context.Context, userID int64, token string, exp time.Time) error
+	GetRefreshToken(ctx context.Context, userID int64) (getRefreshTokenResult, error)
 }
 
 type repository struct {
@@ -96,4 +99,25 @@ func (r *repository) GetUserByID(ctx context.Context, id int64) (*User, error) {
 		return nil, fmt.Errorf("database query error: %w", err)
 	}
 	return user, nil
+}
+
+func (r repository) StoreRefreshToken(ctx context.Context, userID int64, token string, exp time.Time) error {
+	query := `
+ 		INSERT INTO refresh_tokens (user_id, token, expires_at)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id)
+        DO UPDATE SET token = EXCLUDED.token, expires_at = EXCLUDED.expires_at
+	`
+	_, err := r.db.ExecContext(ctx, query, userID, token, time.Now().Add(24*time.Hour*7))
+	return err
+}
+
+func (r repository) GetRefreshToken(ctx context.Context, userID int64) (getRefreshTokenResult, error) {
+	query := `SELECT user_id, token, expires_at FROM refresh_token WHERE user_id = $1`
+	token := getRefreshTokenResult{}
+	err := r.db.QueryRowContext(ctx, query, userID).Scan(&token.UserID, &token.Token, &token.Expires_at)
+	if err != nil {
+		return getRefreshTokenResult{}, fmt.Errorf("database query error: %w", err)
+	}
+	return token, nil
 }

@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"strings"
-	"time"
 )
 
 func generateHMAC(data, secret string) string {
@@ -28,7 +27,7 @@ func EncodeJWT(claims Payload, secretKey string) (string, error) {
 	return header + "." + payload + "." + signature, nil
 }
 
-func DecodeJWT(token string, secretKey string) (*Payload, error) {
+func DecodeJWT(token string, secretKey string) (Payload, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
 		return nil, Errors.InvalidToken
@@ -51,19 +50,40 @@ func DecodeJWT(token string, secretKey string) (*Payload, error) {
 	}
 
 	// ok, decode payload
-
 	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
 	if err != nil {
 		return nil, Errors.InvalidToken
 	}
 
-	var claims Payload
-	if err := json.Unmarshal(payload, &claims); err != nil {
+	// check token type
+	var raw map[string]any
+	if err := json.Unmarshal(payload, &raw); err != nil {
+		return nil, Errors.InvalidToken
+	}
+	typeStr, ok := raw["token_type"].(float64)
+
+	if !ok {
 		return nil, Errors.InvalidToken
 	}
 
-	if time.Now().After(claims.Exp) {
-		return nil, Errors.ExpiredToken
+	var claims Payload
+
+	switch int(typeStr) {
+	case int(Access):
+		access := &AccessPayload{}
+		if err := json.Unmarshal(payload, access); err != nil {
+			return nil, Errors.InvalidToken
+		}
+		claims = access
+	case int(Refresh):
+		refresh := &RefreshPayload{}
+		if err := json.Unmarshal(payload, refresh); err != nil {
+			return nil, Errors.InvalidToken
+		}
+		claims = refresh
+	default:
+
+		return nil, Errors.InvalidToken
 	}
-	return &claims, nil
+	return claims, nil
 }

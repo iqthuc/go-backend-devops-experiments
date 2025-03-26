@@ -19,6 +19,7 @@ func IntAuthRouter(r *http.ServeMux, db *sql.DB, maker token.Maker) {
 	authRouter := http.NewServeMux()
 	authRouter.HandleFunc("POST /register", authHandler.RegisterUser)
 	authRouter.HandleFunc("POST /login", authHandler.Login)
+	authRouter.HandleFunc("POST /refresh_token", authHandler.RefreshToken)
 	authRouter.HandleFunc("GET /profile", middleware.Wrap(authHandler.GetUserInfo, authMiddleware.Auth))
 	middlewares := middleware.Apply(middleware.Logger)
 	r.Handle("/auth/", http.StripPrefix("/auth", middlewares(authRouter)))

@@ -12,9 +12,10 @@ import (
 
 type UserCase interface {
 	RegisterUser(ctx context.Context, user *User) error
-	Login(ctx context.Context, identifier LoginRequest) (*loginUserReponse, LoginStatus, error)
+	Login(ctx context.Context, identifier LoginRequest) (*loginResult, LoginStatus, error)
+	RefreshToken(ctx context.Context, refreshToken string) (string, error)
 	// để tạm để test auth, chuyển về feature User sau
-	GetUserInfo(ctx context.Context, id int64) (*userInfoResponse, error)
+	GetUserInfo(ctx context.Context, id int64) (*getUserInfoResult, error)
 }
 
 type userCase struct {
@@ -42,10 +43,12 @@ func (u *userCase) RegisterUser(ctx context.Context, user *User) error {
 	return u.repo.CreateUser(ctx, user)
 }
 
-func (u *userCase) Login(ctx context.Context, rq LoginRequest) (*loginUserReponse, LoginStatus, error) {
+func (u *userCase) Login(ctx context.Context, rq LoginRequest) (*loginResult, LoginStatus, error) {
+	// verify thông tin đăng nhập
+	// tạo và gửi về access token và refresh token
 	user, err := u.repo.GetUserByUsernamOrEmail(ctx, rq.Identifier, rq.Identifier)
 	if err != nil {
-		return nil, LoginStatusSystemError, nil
+		return nil, LoginStatusSystemError, fmt.Errorf("get user failed: %w", err)
 	}
 	if user == nil {
 		return nil, LoginStatusUserNotFound, nil
@@ -56,15 +59,32 @@ func (u *userCase) Login(ctx context.Context, rq LoginRequest) (*loginUserRepons
 		return nil, LoginStatusInvalidPassword, nil
 	}
 
-	token, err := u.maker.CreateToken(user.id, time.Hour)
+	accessPayload := token.NewAccessPayload(user.id, time.Now().Add(time.Minute*15))
 
-	response := &loginUserReponse{
-		AccessToken: token,
+	accessToken, err := u.maker.CreateToken(accessPayload)
+	if err != nil {
+		return nil, LoginStatusSystemError, fmt.Errorf("failed to generate accessToken: %w", err)
+	}
+
+	refreshTokenExpiresAt := time.Now().Add(24 * time.Hour * 7)
+	refreshPayload := token.NewRefreshPayload(user.id, refreshTokenExpiresAt)
+	refreshToken, err := u.maker.CreateToken(refreshPayload)
+	if err != nil {
+		return nil, LoginStatusSystemError, fmt.Errorf("failed to generate accessToken: %w", err)
+	}
+	// Lưu Refresh Token vào database (để quản lý và thu hồi khi cần)
+	// hash token trong thực tế
+	if err := u.repo.StoreRefreshToken(ctx, user.id, refreshToken, refreshTokenExpiresAt); err != nil {
+		return nil, LoginStatusSystemError, fmt.Errorf("failed to save refresh token: %w", err)
+	}
+	response := &loginResult{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}
 	return response, LoginStatusSuccess, nil
 }
 
-func (u *userCase) GetUserInfo(ctx context.Context, id int64) (*userInfoResponse, error) {
+func (u *userCase) GetUserInfo(ctx context.Context, id int64) (*getUserInfoResult, error) {
 	user, err := u.repo.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user info: %w ", err)
@@ -72,11 +92,40 @@ func (u *userCase) GetUserInfo(ctx context.Context, id int64) (*userInfoResponse
 	if user == nil {
 		return nil, Err.ErrUserNotFound
 	}
-	info := &userInfoResponse{
+	info := &getUserInfoResult{
 		Username:    user.username,
 		Email:       user.email,
 		FullName:    user.fullName,
 		PhoneNumber: user.phoneNumber,
 	}
 	return info, nil
+}
+
+func (u userCase) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
+	// xác thực token, kiểm tra token trong database
+	// xóa và tạo lại refresh token cũ trong db nếu sắp hết hạn
+	// cấp access token mới
+	payload, err := u.maker.VerifyToken(refreshToken)
+	if err != nil {
+		return "", fmt.Errorf("failed to verify refresh token: %w", err)
+	}
+
+	storeToken, err := u.repo.GetRefreshToken(ctx, payload.GetUserID())
+	if err != nil {
+		return "", fmt.Errorf("failed to get refresh token: %w", err)
+	}
+
+	if time.Now().After(storeToken.Expires_at) {
+		return "", fmt.Errorf("refresh token expired: %w", err)
+	}
+	if storeToken.Token != refreshToken {
+		return "", fmt.Errorf("invalid refresh token")
+	}
+
+	accessPayload := token.NewAccessPayload(payload.GetUserID(), time.Now().Add(time.Minute*15))
+	newAccessToken, err := u.maker.CreateToken(accessPayload)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate accessToken: %w", err)
+	}
+	return newAccessToken, nil
 }

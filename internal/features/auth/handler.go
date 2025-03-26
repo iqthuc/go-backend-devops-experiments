@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	messages "github.com/iqthuc/sport-shop/internal"
 	"github.com/iqthuc/sport-shop/internal/delivery/middleware"
@@ -15,6 +16,7 @@ type Handler interface {
 	RegisterUser(w http.ResponseWriter, r *http.Request)
 	Login(w http.ResponseWriter, r *http.Request)
 	GetUserInfo(w http.ResponseWriter, r *http.Request)
+	RefreshToken(w http.ResponseWriter, r *http.Request)
 }
 
 type handler struct {
@@ -57,7 +59,7 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorJsonResponse(w, http.StatusBadRequest, messages.InvalidRequest)
 		return
 	}
-	response, status, err := h.userCase.Login(r.Context(), req)
+	result, status, err := h.userCase.Login(r.Context(), req)
 	if err != nil {
 		log.Println(err)
 		utils.ErrorJsonResponse(w, http.StatusInternalServerError, messages.LoginFailedInternal)
@@ -67,7 +69,18 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorJsonResponse(w, http.StatusUnauthorized, messages.LoginIncorrectCredentials)
 		return
 	}
-	utils.SuccessJsonResponse(w, response, messages.LoginSuccesfully)
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    result.RefreshToken,
+		Path:     "/api/products",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   int((24 * time.Hour).Seconds()),
+	})
+
+	utils.SuccessJsonResponse(w, result.AccessToken, messages.LoginSuccesfully)
 }
 
 func (h *handler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
@@ -86,4 +99,19 @@ func (h *handler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.SuccessJsonResponse(w, user, "User profile retrieved successfully")
+}
+
+func (h *handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	var req refreshTokenRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.ErrorJsonResponse(w, http.StatusBadRequest, messages.InvalidRequest)
+		return
+	}
+	newAccessToken, err := h.userCase.RefreshToken(r.Context(), req.Token)
+	if err != nil {
+		log.Println(err)
+		utils.ErrorJsonResponse(w, http.StatusInternalServerError, "Failed")
+		return
+	}
+	utils.SuccessJsonResponse(w, newAccessToken, messages.LoginSuccesfully)
 }

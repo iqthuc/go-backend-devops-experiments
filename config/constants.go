@@ -4,6 +4,6 @@ var Env = struct {
 	SecretKey     string
 	ServerAddress string
 }{
-	SecretKey:     "SECRETKEY",
+	SecretKey:     "NOTSECRETKEY",
 	ServerAddress: "SERVER_ADDRESS",
 }

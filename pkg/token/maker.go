@@ -2,7 +2,6 @@ package token
 
 import (
 	"errors"
-	"time"
 )
 
 var Errors = struct {
@@ -13,12 +12,7 @@ var Errors = struct {
 	ExpiredToken: errors.New("token expired"),
 }
 
-type Payload struct {
-	UserId int64     `json:"user_id"`
-	Exp    time.Time `json:"exp"`
-}
-
 type Maker interface {
-	CreateToken(userId int64, duration time.Duration) (string, error)
-	VerifyToken(token string) (*Payload, error)
+	CreateToken(payload Payload) (string, error)
+	VerifyToken(token string) (Payload, error)
 }
