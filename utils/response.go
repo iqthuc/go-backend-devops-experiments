@@ -14,7 +14,6 @@ type APIResponse struct {
 
 func JsonResponse(w http.ResponseWriter, response APIResponse) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(response.Code)
 	json.NewEncoder(w).Encode(response)
 }
 

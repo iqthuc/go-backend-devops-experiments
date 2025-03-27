@@ -11,11 +11,12 @@ type responseWriterWrapper struct {
 	statusCode int
 }
 
-func (rw *responseWriterWrapper) WriteHeader(code int) {
-	rw.statusCode = code
-}
+type LoggerMiddleware struct{}
 
-func Logger(next http.Handler) http.Handler {
+func NewLogger() LoggerMiddleware {
+	return LoggerMiddleware{}
+}
+func (l LoggerMiddleware) Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		rw := &responseWriterWrapper{w, http.StatusOK}

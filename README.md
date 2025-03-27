@@ -1,7 +1,7 @@
 # Project này là để trải nghiệm Go-Backend-DevOps
 
 ### cấu trúc project:
-<pre><code>sport-shop/
+```sport-shop/
 ├── cmd/
 │   └── api/
 │       └── main.go
@@ -37,4 +37,4 @@
 ├── .env
 ├── go.mod
 └── go.sum
-</code></pre>
+```

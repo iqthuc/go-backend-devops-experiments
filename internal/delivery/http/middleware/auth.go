@@ -10,15 +10,15 @@ import (
 	"github.com/iqthuc/sport-shop/utils"
 )
 
-type AuthMiddleware struct {
+type Authenticator struct {
 	maker token.Maker
 }
 
-func NewAuthMiddleware(maker token.Maker) *AuthMiddleware {
-	return &AuthMiddleware{maker: maker}
+func NewAuthenticator(maker token.Maker) *Authenticator {
+	return &Authenticator{maker: maker}
 }
 
-func (a *AuthMiddleware) Auth(next http.Handler) http.Handler {
+func (a *Authenticator) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {

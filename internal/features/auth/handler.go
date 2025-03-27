@@ -8,7 +8,7 @@ import (
 	"time"
 
 	messages "github.com/iqthuc/sport-shop/internal"
-	"github.com/iqthuc/sport-shop/internal/delivery/middleware"
+	"github.com/iqthuc/sport-shop/internal/delivery/http/middleware"
 	"github.com/iqthuc/sport-shop/utils"
 )
 
