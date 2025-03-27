@@ -21,13 +21,14 @@ const (
 func InitServer() {
 	db, err := database.NewPostgres()
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatal(err)
 	}
 
 	s := http.NewServeMux()
 	router.InitAdminRouter(s, db)
 	router.InitProductRouter(s, db)
 	router.IntAuthRouter(s, db)
+	router.IntGrapqlhRouter(s)
 
 	loggerMW := middleware.NewLogger()
 	limiterMW := middleware.NewRateLimiter(RequestLimit, RateLimitWindow)

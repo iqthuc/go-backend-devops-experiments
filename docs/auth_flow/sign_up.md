@@ -11,12 +11,3 @@
                  ├── hash mật khẩu và lưu vào DB
                  └── Trả về response thành công
 ```
-test mermaid trên github
-```mermaid
-graph TD
-    A[Start] --> B{Is it working?}
-    B -->|Yes| C[Great!]
-    B -->|No| D[Fix it]
-    D --> B
-
-```
