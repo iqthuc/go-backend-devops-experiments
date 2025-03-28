@@ -12,7 +12,7 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-func IntGrapqlhRouter(r *http.ServeMux) {
+func IntGraphqlRouter(r *http.ServeMux) {
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
@@ -27,8 +27,6 @@ func IntGrapqlhRouter(r *http.ServeMux) {
 		Cache: lru.New[string](100),
 	})
 	// authRouter.HandleFunc("GET /profile", middleware.Wrap(authHandler.GetUserInfo, authMW.Auth))
-	graphRouter := http.NewServeMux()
-	graphRouter.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
-	graphRouter.Handle("/query", srv)
-	r.Handle("/graphql/", http.StripPrefix("/graphql", graphRouter))
+	r.Handle("/graphql", playground.Handler("GraphQL Playground", "/graphql/query"))
+	r.Handle("/graphql/query", srv)
 }
