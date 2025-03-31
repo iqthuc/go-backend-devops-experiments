@@ -1,0 +1,44 @@
+type Product {
+    id: ID!
+    name: String!
+    category: Category
+    brand: Brand
+    basePrice: Float!
+    variants: [ProductVariant!]!
+}
+
+type ProductVariant {
+    id: ID!
+    product: Product!
+    stockQuantity: Int!
+    soldQuantity: Int!
+    price: Float!
+    size: Size
+    color: Color
+}
+
+type Size {
+    id: ID!
+    name: String!
+}
+
+type Color {
+    id: ID!
+    name: String!
+    hexCode: String!
+}
+
+type Category {
+    id: ID!
+    name: String!
+}
+
+type Brand {
+    id: ID!
+    name: String!
+}
+
+type Query {
+    products: [Product!]!
+    product(id: ID!): Product
+}

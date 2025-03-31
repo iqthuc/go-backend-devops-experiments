@@ -28,7 +28,7 @@ func InitServer() {
 	router.InitAdminRouter(s, db)
 	router.InitProductRouter(s, db)
 	router.IntAuthRouter(s, db)
-	router.IntGraphqlRouter(s)
+	router.IntGraphqlRouter(s, db)
 
 	loggerMW := middleware.NewLogger()
 	limiterMW := middleware.NewRateLimiter(RequestLimit, RateLimitWindow)

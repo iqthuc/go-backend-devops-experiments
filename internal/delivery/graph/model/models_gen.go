@@ -2,25 +2,45 @@
 
 package model
 
-type Mutation struct {
+type Brand struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Category struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Color struct {
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	HexCode string `json:"hexCode"`
+}
+
+type Product struct {
+	ID        string            `json:"id"`
+	Name      string            `json:"name"`
+	Category  *Category         `json:"category,omitempty"`
+	Brand     *Brand            `json:"brand,omitempty"`
+	BasePrice float64           `json:"basePrice"`
+	Variants  []*ProductVariant `json:"variants"`
+}
+
+type ProductVariant struct {
+	ID            string   `json:"id"`
+	Product       *Product `json:"product"`
+	StockQuantity int32    `json:"stockQuantity"`
+	SoldQuantity  int32    `json:"soldQuantity"`
+	Price         float64  `json:"price"`
+	Size          *Size    `json:"size,omitempty"`
+	Color         *Color   `json:"color,omitempty"`
 }
 
 type Query struct {
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
-}
-
-type User struct {
+type Size struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
