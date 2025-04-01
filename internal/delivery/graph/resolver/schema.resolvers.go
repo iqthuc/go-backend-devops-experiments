@@ -6,23 +6,50 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	graph "github.com/iqthuc/sport-shop/internal/delivery/graph/generated"
 	"github.com/iqthuc/sport-shop/internal/delivery/graph/model"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Products is the resolver for the products field.
-func (r *queryResolver) Products(ctx context.Context) ([]*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Products - products"))
+func (r *queryResolver) Products(ctx context.Context, limit *int, offset *int) ([]*model.Product, error) {
+	query := "SELECT id, name, base_price, brand_id, category_id FROM products LIMIT $1 OFFSET $2"
+	rows, err := r.DB.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		log.Printf("query database error: %v", err)
+		return nil, gqlerror.Errorf("query database error")
+	}
+	products := []*model.Product{}
+	for rows.Next() {
+		p := &model.Product{}
+		if err := rows.Scan(&p.ID, &p.Name, &p.BasePrice, &p.Brand_id, &p.Category_id); err != nil {
+			log.Printf("Scan product error: %v", err)
+
+			return nil, gqlerror.Errorf("Scan product error")
+		}
+		products = append(products, p)
+	}
+	return products, nil
 }
 
 // Product is the resolver for the product field.
-func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+func (r *queryResolver) Product(ctx context.Context, id int64) (*model.Product, error) {
+	query := "SELECT id, name, base_price, brand_id, category_id FROM products WHERE id = $1"
+	p := &model.Product{}
+	if err := r.DB.QueryRowContext(ctx, query, id).Scan(&p.ID, &p.Name, &p.BasePrice, &p.Brand_id, &p.Category_id); err != nil {
+		log.Printf("query database error: %v", err)
+		return nil, gqlerror.Errorf("query database error")
+	}
+	return p, nil
 }
+
+// Product returns graph.ProductResolver implementation.
+func (r *Resolver) Product() graph.ProductResolver { return &productResolver{r} }
 
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
+type productResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

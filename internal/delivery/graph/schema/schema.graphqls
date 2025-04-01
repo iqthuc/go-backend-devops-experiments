@@ -1,8 +1,10 @@
+directive @goField(forceResolver: Boolean, name: String, omittable: Boolean, type: String) on FIELD_DEFINITION
+
 type Product {
     id: ID!
     name: String!
-    category: Category
-    brand: Brand
+    category: Category @goField(forceResolver: true, name: "Category_id", type: "int64")
+    brand: Brand @goField(forceResolver: true, name: "Brand_id", type: "int64")
     basePrice: Float!
     variants: [ProductVariant!]!
 }
@@ -39,6 +41,6 @@ type Brand {
 }
 
 type Query {
-    products: [Product!]!
+    products(limit: Int = 10, offset: Int = 0): [Product!]!
     product(id: ID!): Product
 }

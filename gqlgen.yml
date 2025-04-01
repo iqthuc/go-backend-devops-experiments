@@ -45,7 +45,7 @@ resolver:
   # Optional: Pass in a path to a new gotpl template to use for generating resolvers
   # resolver_template: [your/path/resolver.gotpl]
   # Optional: turn on to avoid rewriting existing resolver(s) when generating
-  # preserve_resolver: false
+  preserve_resolver: true
 
 # Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
 # struct_tag: json
@@ -122,9 +122,9 @@ autobind:
 models:
   ID:
     model:
+      - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.ID
       - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
   # gqlgen provides a default GraphQL UUID convenience wrapper for github.com/google/uuid
   # but you can override this to provide your own GraphQL UUID implementation
@@ -143,7 +143,7 @@ models:
   # do not need to worry about interoperability and only expect small numbers.
   Int:
     model:
-      - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/99designs/gqlgen/graphql.Int
   Int64:
     model:
       - github.com/99designs/gqlgen/graphql.Int

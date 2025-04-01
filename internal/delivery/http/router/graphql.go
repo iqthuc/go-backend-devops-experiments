@@ -9,6 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/iqthuc/sport-shop/internal/delivery/graph/dataloader"
 	graph "github.com/iqthuc/sport-shop/internal/delivery/graph/generated"
 	"github.com/iqthuc/sport-shop/internal/delivery/graph/resolver"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -30,7 +31,7 @@ func IntGraphqlRouter(r *http.ServeMux, db *sql.DB) {
 	srv.Use(extension.AutomaticPersistedQuery{
 		Cache: lru.New[string](100),
 	})
-	// authRouter.HandleFunc("GET /profile", middleware.Wrap(authHandler.GetUserInfo, authMW.Auth))
+	sv := dataloader.Middleware(db, srv)
 	r.Handle("/graphql", playground.Handler("GraphQL Playground", "/graphql/query"))
-	r.Handle("/graphql/query", srv)
+	r.Handle("/graphql/query", sv)
 }

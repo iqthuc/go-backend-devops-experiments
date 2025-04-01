@@ -32,6 +32,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Product() ProductResolver
 	Query() QueryResolver
 }
 
@@ -75,8 +76,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Product  func(childComplexity int, id string) int
-		Products func(childComplexity int) int
+		Product  func(childComplexity int, id int64) int
+		Products func(childComplexity int, limit *int, offset *int) int
 	}
 
 	Size struct {
@@ -254,14 +255,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Product(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.Product(childComplexity, args["id"].(int64)), true
 
 	case "Query.products":
 		if e.complexity.Query.Products == nil {
 			break
 		}
 
-		return e.complexity.Query.Products(childComplexity), true
+		args, err := ec.field_Query_products_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Products(childComplexity, args["limit"].(*int), args["offset"].(*int)), true
 
 	case "Size.id":
 		if e.complexity.Size.ID == nil {
@@ -366,11 +372,13 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/schema.graphqls", Input: `type Product {
+	{Name: "../schema/schema.graphqls", Input: `directive @goField(forceResolver: Boolean, name: String, omittable: Boolean, type: String) on FIELD_DEFINITION
+
+type Product {
     id: ID!
     name: String!
-    category: Category
-    brand: Brand
+    category: Category @goField(forceResolver: true, name: "Category_id", type: "int64")
+    brand: Brand @goField(forceResolver: true, name: "Brand_id", type: "int64")
     basePrice: Float!
     variants: [ProductVariant!]!
 }
@@ -407,7 +415,7 @@ type Brand {
 }
 
 type Query {
-    products: [Product!]!
+    products(limit: Int = 10, offset: Int = 0): [Product!]!
     product(id: ID!): Product
 }
 `, BuiltIn: false},

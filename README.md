@@ -1,4 +1,18 @@
-# Project này là để trải nghiệm Go-Backend-DevOps
+### Mục đích
+  - Project này là để trải nghiệm Go-Backend-DevOps.
+  - Mục đích là để học lí thuyết về các công nghệ
+    và tự triển khai chúng trước khi dùng library trong dự án thực tế
+    vì vậy các core business logic trông hơi đần
+
+### Các mục chính
+- Go
+- sh script
+- database: postgres, mongoDB, Redis, Elasticsearch
+- api: rest, graphql, gRPC
+- authentication: jwt, paseto, OAuth
+- message brokers: kafka
+- ci/cd: github actions, jenkins
+- devops: docker, kubernetes
 
 ### cấu trúc project:
 ```sport-shop/

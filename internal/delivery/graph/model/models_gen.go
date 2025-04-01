@@ -3,35 +3,35 @@
 package model
 
 type Brand struct {
-	ID   string `json:"id"`
+	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
 
 type Category struct {
-	ID   string `json:"id"`
+	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
 
 type Color struct {
-	ID      string `json:"id"`
+	ID      int64  `json:"id"`
 	Name    string `json:"name"`
 	HexCode string `json:"hexCode"`
 }
 
 type Product struct {
-	ID        string            `json:"id"`
-	Name      string            `json:"name"`
-	Category  *Category         `json:"category,omitempty"`
-	Brand     *Brand            `json:"brand,omitempty"`
-	BasePrice float64           `json:"basePrice"`
-	Variants  []*ProductVariant `json:"variants"`
+	ID          int64             `json:"id"`
+	Name        string            `json:"name"`
+	Category_id int64             `json:"category,omitempty"`
+	Brand_id    int64             `json:"brand,omitempty"`
+	BasePrice   float64           `json:"basePrice"`
+	Variants    []*ProductVariant `json:"variants"`
 }
 
 type ProductVariant struct {
-	ID            string   `json:"id"`
+	ID            int64    `json:"id"`
 	Product       *Product `json:"product"`
-	StockQuantity int32    `json:"stockQuantity"`
-	SoldQuantity  int32    `json:"soldQuantity"`
+	StockQuantity int      `json:"stockQuantity"`
+	SoldQuantity  int      `json:"soldQuantity"`
 	Price         float64  `json:"price"`
 	Size          *Size    `json:"size,omitempty"`
 	Color         *Color   `json:"color,omitempty"`
@@ -41,6 +41,6 @@ type Query struct {
 }
 
 type Size struct {
-	ID   string `json:"id"`
+	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
