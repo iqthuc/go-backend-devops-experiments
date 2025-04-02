@@ -1,53 +1,55 @@
 package middleware
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/iqthuc/sport-shop/utils"
+	"github.com/redis/go-redis/v9"
 )
 
-type rateLimitInfo struct {
-	requests  int
-	resetTime time.Time // thời điểm reset bộ đếm
-}
-
 type RateLimiter struct {
-	clients sync.Map
-	limit   int
-	windows time.Duration // khoảng thời gian giới hạn (vd: 15p)
+	redisClient *redis.Client
+	limit       int
+	windows     time.Duration // khoảng thời gian giới hạn (vd: 15p)
 }
 
-func NewRateLimiter(limit int, window time.Duration) *RateLimiter {
+func NewRateLimiter(redisClient *redis.Client, limit int, window time.Duration) *RateLimiter {
 	return &RateLimiter{
-		limit:   limit,
-		windows: window,
+		redisClient: redisClient,
+		limit:       limit,
+		windows:     window,
 	}
 }
 
+// tạo cacheKey cho mỗi clientIP, tăng count mỗi khi có request
+// nếu là lần request đầu, đặt thời gian giới hạn
+// nếu vượt quá limit, báo lỗi
 func (rl *RateLimiter) RateLimiting(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.Background()
 		clientIP := r.RemoteAddr
-		value, loaded := rl.clients.LoadOrStore(clientIP, &rateLimitInfo{
-			requests:  0,
-			resetTime: time.Now().Add(rl.windows),
-		})
-		if !loaded {
-			log.Printf("new client access: %s", clientIP)
-		}
-		clientData := value.(*rateLimitInfo)
+		cacheKey := fmt.Sprintf("rate_limit:%s", clientIP)
 
-		if time.Now().After(clientData.resetTime) {
-			clientData.requests = 0
-			clientData.resetTime = time.Now().Add(rl.windows)
+		count, err := rl.redisClient.Incr(ctx, cacheKey).Result()
+		if err != nil {
+			log.Printf("Redis error: %v", err)
+			utils.ErrorJsonResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
 		}
-		if clientData.requests >= rl.limit {
+
+		if count == 1 {
+			rl.redisClient.Expire(ctx, cacheKey, rl.windows)
+		}
+
+		if count > int64(rl.limit) {
 			utils.ErrorJsonResponse(w, http.StatusTooManyRequests, "Rap chậm thôi")
 			return
 		}
-		clientData.requests++
+
 		next.ServeHTTP(w, r)
 	})
 }

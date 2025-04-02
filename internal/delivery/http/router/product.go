@@ -5,11 +5,12 @@ import (
 	"net/http"
 
 	"github.com/iqthuc/sport-shop/internal/features/product"
+	"github.com/redis/go-redis/v9"
 )
 
-func InitProductRouter(r *http.ServeMux, db *sql.DB) {
+func InitProductRouter(r *http.ServeMux, db *sql.DB, redis *redis.Client) {
 	productRepo := product.NewRepository(db)
-	productUseCase := product.NewService(productRepo)
+	productUseCase := product.NewUserCase(productRepo, redis)
 	productHandler := product.NewHandler(productUseCase)
 	productRouter := http.NewServeMux()
 	productRouter.HandleFunc("GET /", productHandler.GetProducts)

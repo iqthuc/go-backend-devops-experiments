@@ -2,8 +2,13 @@ package product
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
+	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type GetProductsRequestParams struct {
@@ -18,12 +23,14 @@ type UserCase interface {
 }
 
 type userCase struct {
-	repo Repository
+	repo  Repository
+	cache *redis.Client
 }
 
-func NewService(repo Repository) UserCase {
+func NewUserCase(repo Repository, redis *redis.Client) UserCase {
 	return &userCase{
-		repo: repo,
+		repo:  repo,
+		cache: redis,
 	}
 }
 
@@ -42,13 +49,23 @@ func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsReq
 	if strings.ToUpper(requestParams.SortBy.Order) != "DESC" {
 		requestParams.SortBy.Order = ""
 	}
-
 	queryParams := GetProductsQueryParams{
 		offset:  offset,
 		limit:   perPage,
 		Filters: requestParams.Filters,
 		SortBy:  requestParams.SortBy,
 	}
+	cacheKey := fmt.Sprintf("products:page=%d:filters=%v:sort=%s-%s",
+		requestParams.page, requestParams.Filters, requestParams.SortBy.Field, requestParams.SortBy.Order)
+	cachedData, err := s.cache.Get(ctx, cacheKey).Result()
+	if err == nil {
+		log.Println("lấy products từ cache")
+		var cachedResponse ProductsResponse
+		json.Unmarshal([]byte(cachedData), &cachedResponse)
+		return cachedResponse, nil
+	}
+	log.Println("không có products trong cache, tự lấy products")
+
 	result, err := s.repo.GetProducts(ctx, queryParams)
 	if err != nil {
 		return ProductsResponse{}, fmt.Errorf("Failed to get products: %w", err)
@@ -75,6 +92,9 @@ func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsReq
 		SortBy:     requestParams.SortBy,
 		Pagination: pagination,
 	}
+
+	cacheData, _ := json.Marshal(response)
+	s.cache.Set(ctx, cacheKey, cacheData, time.Minute*10)
 
 	return response, nil
 }

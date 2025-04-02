@@ -8,9 +8,10 @@ import (
 	"time"
 
 	"github.com/iqthuc/sport-shop/config"
+	"github.com/iqthuc/sport-shop/internal/database"
 	"github.com/iqthuc/sport-shop/internal/delivery/http/middleware"
 	"github.com/iqthuc/sport-shop/internal/delivery/http/router"
-	"github.com/iqthuc/sport-shop/pkg/database"
+	"github.com/iqthuc/sport-shop/pkg/cache"
 )
 
 const (
@@ -23,15 +24,19 @@ func InitServer() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	rdb, err := cache.NewRedisClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	s := http.NewServeMux()
 	router.InitAdminRouter(s, db)
-	router.InitProductRouter(s, db)
+	router.InitProductRouter(s, db, rdb)
 	router.IntAuthRouter(s, db)
 	router.IntGraphqlRouter(s, db)
 
 	loggerMW := middleware.NewLogger()
-	limiterMW := middleware.NewRateLimiter(RequestLimit, RateLimitWindow)
+	limiterMW := middleware.NewRateLimiter(rdb, RequestLimit, RateLimitWindow)
 	middlewares := middleware.Apply(loggerMW.Logger, limiterMW.RateLimiting)
 
 	serverAddress := os.Getenv(config.Env.ServerAddress)
