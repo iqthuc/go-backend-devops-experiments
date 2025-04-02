@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 )
 
@@ -61,7 +63,21 @@ var templateFuncs = template.FuncMap{
 	},
 }
 
-var listProductTemplate = template.Must(template.New("list_product.html").Funcs(templateFuncs).ParseFiles("web/admin/list_product.html"))
+var listProductTemplate *template.Template
+var productDetailTempl *template.Template
+
+func init() {
+	dir, err := os.Getwd()
+	log.Println(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	listProductTemplatePath := filepath.Join(dir, "web/admin/list_product.html")
+	listProductTemplate = template.Must(template.New("list_product.html").Funcs(templateFuncs).ParseFiles(listProductTemplatePath))
+
+	productDetailTemplatePath := filepath.Join(dir, "web/admin/product_detail.html")
+	productDetailTempl = template.Must(template.New("product_detail.html").Funcs(productDetailsTemplateFuncs).ParseFiles(productDetailTemplatePath))
+}
 
 func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
@@ -101,8 +117,6 @@ func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to render template", http.StatusInternalServerError)
 	}
 }
-
-var productDetailTempl = template.Must(template.New("product_detail.html").Funcs(productDetailsTemplateFuncs).ParseFiles("web/admin/product_detail.html"))
 
 func (h *handler) GetProductDetails(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
