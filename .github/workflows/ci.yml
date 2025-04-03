@@ -23,25 +23,12 @@ jobs:
         ports:
           - 6379:6379
       mongodb:
-        image: mongo:latest
+        image: mongo
         ports:
-          - 27017:27017
-        options: >-
-          --health-cmd="mongo
-          --eval 'db.runCommand({ connectionStatus: 1 })'
-          --quiet" --health-interval=10s
-          --health-timeout=60s --health-retries=5
-
+          - 27017/tcp
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-
-      - name: Wait for MongoDB to be ready
-        run: |
-          until nc -zv localhost 27017; do
-            echo "Waiting for MongoDB to be ready..."
-            sleep 5
-          done
 
       - name: Install Go
         uses: actions/setup-go@v5
