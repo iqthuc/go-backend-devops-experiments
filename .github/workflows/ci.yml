@@ -36,6 +36,13 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Wait for MongoDB to be ready
+        run: |
+          until nc -zv localhost 27017; do
+            echo "Waiting for MongoDB to be ready..."
+            sleep 5
+          done
+
       - name: Install Go
         uses: actions/setup-go@v5
         with:
