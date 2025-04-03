@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"testing"
 
 	"github.com/iqthuc/sport-shop/utils"
@@ -13,6 +14,16 @@ func TestNewPostgres(t *testing.T) {
 	defer db.Close()
 	if err != nil {
 		t.Errorf("error connecting to postgres: %v", err)
+	}
+
+}
+
+func TestNewMongoDB(t *testing.T) {
+	utils.InitTestConfig()
+	client, err := NewMongoDB()
+	defer client.Disconnect(context.Background())
+	if err != nil {
+		t.Errorf("error connecting to mongodb: %v", err)
 	}
 
 }

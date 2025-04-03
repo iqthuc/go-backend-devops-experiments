@@ -7,7 +7,7 @@ import (
 )
 
 type Parsable interface {
-	int | string | float64
+	int | int64 | string | float64
 }
 
 func ParseQueryParam[T Parsable](r *http.Request, key string) T {
@@ -24,7 +24,13 @@ func ParseQueryParam[T Parsable](r *http.Request, key string) T {
 			return result
 		}
 		result = any(val).(T)
-
+	case int64:
+		val, err := strconv.ParseInt(queryValue, 10, 64)
+		if err != nil {
+			log.Println("error parse int")
+			return result
+		}
+		result = any(val).(T)
 	case float64:
 		val, err := strconv.ParseFloat(queryValue, 64)
 		if err != nil {

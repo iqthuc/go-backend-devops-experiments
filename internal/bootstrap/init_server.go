@@ -29,11 +29,17 @@ func InitServer() {
 		log.Fatal(err)
 	}
 
+	mongoClient, err := database.NewMongoDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	s := http.NewServeMux()
 	router.InitAdminRouter(s, db)
 	router.InitProductRouter(s, db, rdb)
 	router.IntAuthRouter(s, db)
 	router.IntGraphqlRouter(s, db)
+	router.InitCartRouter(s, mongoClient)
 
 	loggerMW := middleware.NewLogger()
 	limiterMW := middleware.NewRateLimiter(rdb, RequestLimit, RateLimitWindow)
