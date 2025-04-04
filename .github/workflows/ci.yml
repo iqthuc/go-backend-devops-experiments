@@ -23,9 +23,11 @@ jobs:
         ports:
           - 6379:6379
       mongodb:
-        image: mongo
+        image: mongo:latest
         ports:
-          - 27017/tcp
+          - 27017:27017
+        env:
+          MONGO_URI: "mongodb://127.0.0.1:27017"
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
