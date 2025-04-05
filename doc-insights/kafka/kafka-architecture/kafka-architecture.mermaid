@@ -1,0 +1,70 @@
+flowchart LR
+    %% Định nghĩa các thành phần client
+    subgraph Clients["Clients"]
+        direction TB
+        P1["Producer"]
+        P2["Producer"]
+        C3["Consumer"]
+        subgraph CG["Consumer Group"]
+            direction LR
+            C1["Consumer 1"]
+            C2["Consumer 2"]
+        end
+    end
+
+    %% Kafka Cluster
+    subgraph KafkaCluster["Kafka Cluster"]
+        direction TB
+
+        subgraph B1["Broker 1 (Server)"]
+            B1T1P0["Topic 1 - P0"]
+            B1T2P1["Topic 2 - P1"]
+        end
+
+        subgraph B2["Broker 2 (Server)"]
+            B2T1P1["Topic 1 - P1"]
+            B2T2P2["Topic 2 - P2"]
+        end
+
+        subgraph B3["Broker 3 (Server)"]
+            B3T1P2["Topic 1 - P2"]
+            B3T2P0["Topic 2 - P0"]
+        end
+    end
+
+    %% Phần Điều phối
+    subgraph Coordination["Điều phối Metadata"]
+        direction TB
+        subgraph ZK["ZooKeeper (Cũ)"]
+            ZK1["ZK Node 1"]
+            ZK2["ZK Node 2"]
+            ZK3["ZK Node 3"]
+        end
+
+        subgraph KR["KRaft (Mới)"]
+            KR1["Controller"]
+            KR2["Controller"]
+            KR3["Controller"]
+        end
+    end
+
+    %% Kết nối với clients
+    P1 --> KafkaCluster
+    P2 --> KafkaCluster
+    KafkaCluster --> CG
+    KafkaCluster --> C3
+
+    %% Kết nối điều phối
+    ZK -.-> KafkaCluster
+    KR -.-> KafkaCluster
+
+    %% Định dạng
+    classDef broker fill:#f96,stroke:#333,stroke-width:1px,color:#000
+    classDef partition fill:#bbf,stroke:#333,stroke-width:1px,color:#000
+    classDef client fill:#6b6,stroke:#333,stroke-width:1px,color:#000
+    classDef coord fill:#ff9,stroke:#333,stroke-width:1px,color:#000
+
+    class B1,B2,B3 broker
+    class B1T1P0,B1T2P1,B2T1P1,B2T2P2,B3T1P2,B3T2P0 partition
+    class P1,P2,C1,C2,C3 client
+    class ZK1,ZK2,ZK3,KR1,KR2,KR3 coord
