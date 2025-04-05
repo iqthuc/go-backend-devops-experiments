@@ -3,8 +3,6 @@
 - kiến trúc của kafka:
 ![kafka architecture](kafka-architecture.png)
 
-![mermaid](kafka-architecture.mermaid)
-
 Mô tả:
 1. Kafka Broker:
   - là một server trong kafka cluster. một kafka cluster có thể gồm một hoặc nhiều broker.
@@ -34,10 +32,10 @@ Mô tả:
   - mỗi partition có thể có nhiều replicas để đảm bảo tính sẵn sàng và độ bền
 
 6. Điều phối metadata
-6.1. Zookeeper
-  - được dùng để quản lí metadata của kafka cluster (như thông tin về broker, topic, partition)
-  - chịu trách nhiệm về việc đông bộ hóa và chọn leader cho partition
-  - đã loại bỏ trong kafka 4.0
-6.2. Kraft mode (kafka raft metadata mode)
-  - sử dụng để thay thế zookeeper (vì zookeeper cần cài đặt riêng)
-  - thử nghiệm ở phiên bản kafka 2.8, phiên bản ổn định đầu tiên là 3.3
+  * Zookeeper:
+    - được dùng để quản lí metadata của kafka cluster (như thông tin về broker, topic, partition)
+    - chịu trách nhiệm về việc đông bộ hóa và chọn leader cho partition
+    - đã loại bỏ trong kafka 4.0
+  * Kraft mode (kafka raft metadata mode):
+    - sử dụng để thay thế zookeeper (vì zookeeper cần cài đặt riêng)
+    - thử nghiệm ở phiên bản kafka 2.8, phiên bản ổn định đầu tiên là 3.3
