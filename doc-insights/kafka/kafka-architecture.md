@@ -1,7 +1,7 @@
 ### kafka architecture
 - Kafka là một hệ thống message broker phân tán, stream data mạnh mẽ
 - kiến trúc của kafka:
-![kafka architecture](kafka-architecture.png)
+![kafka architecture](assets/kafka-architecture.png)
 
 Mô tả:
 1. Kafka Broker:
