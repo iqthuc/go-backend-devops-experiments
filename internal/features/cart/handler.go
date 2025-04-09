@@ -9,17 +9,17 @@ import (
 )
 
 type Handler struct {
-	userCase UserCase
+	useCase UseCase
 }
 
-func NewHandler(userCase UserCase) *Handler {
-	return &Handler{userCase: userCase}
+func NewHandler(useCase UseCase) *Handler {
+	return &Handler{useCase: useCase}
 }
 
 func (h *Handler) GetCart(w http.ResponseWriter, r *http.Request) {
 	userID := utils.ParseQueryParam[int64](r, "user_id")
 
-	cart, err := h.userCase.GetCart(r.Context(), userID)
+	cart, err := h.useCase.GetCart(r.Context(), userID)
 	if err != nil {
 		log.Println(err)
 		utils.ErrorJsonResponse(w, http.StatusInternalServerError, "Failed to get cart")
@@ -47,7 +47,7 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		Price:     req.Price,
 		Quantity:  req.Quantity,
 	}
-	if err := h.userCase.AddToCart(r.Context(), req.UserID, item); err != nil {
+	if err := h.useCase.AddToCart(r.Context(), req.UserID, item); err != nil {
 		log.Println(err)
 		utils.ErrorJsonResponse(w, http.StatusInternalServerError, "Something went wrong")
 		return

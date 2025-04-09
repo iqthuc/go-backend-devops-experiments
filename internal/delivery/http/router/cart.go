@@ -9,7 +9,7 @@ import (
 
 func InitCartRouter(r *http.ServeMux, client *mongo.Client) {
 	cartRepo := cart.NewRepository(client)
-	cartUseCase := cart.NewUserCase(cartRepo)
+	cartUseCase := cart.NewUseCase(cartRepo)
 	cartHandler := cart.NewHandler(cartUseCase)
 	cartRouter := http.NewServeMux()
 	cartRouter.HandleFunc("GET /get_cart", cartHandler.GetCart)

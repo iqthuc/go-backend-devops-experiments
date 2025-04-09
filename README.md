@@ -30,7 +30,7 @@
 │   │       ├── handler.go
 │   │       ├── models.go
 │   │       ├── repository.go    //Database access methods
-│   │       └── user_case.go     //Core business logic
+│   │       └── use_case.go     //Core business logic
 │   └── initializer/
 │       ├── init_demo.go
 │       └── run.go

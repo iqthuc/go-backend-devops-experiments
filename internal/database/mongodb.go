@@ -24,7 +24,6 @@ func NewMongoDB() (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(mongoURI)
 
 	client, err := mongo.Connect(ctx, clientOptions)
-
 	if err != nil {
 		return nil, fmt.Errorf("Cannot connect to mongodb: %w", err)
 	}

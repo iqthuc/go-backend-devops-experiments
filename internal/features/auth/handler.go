@@ -20,12 +20,12 @@ type Handler interface {
 }
 
 type handler struct {
-	userCase UserCase
+	useCase UseCase
 }
 
-func NewHandler(userCase UserCase) Handler {
+func NewHandler(useCase UseCase) Handler {
 	return &handler{
-		userCase: userCase,
+		useCase: useCase,
 	}
 }
 
@@ -43,7 +43,7 @@ func (h *handler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		fullName:     req.FullName,
 		phoneNumber:  req.PhoneNumber,
 	}
-	if err := h.userCase.RegisterUser(r.Context(), user); err != nil {
+	if err := h.useCase.RegisterUser(r.Context(), user); err != nil {
 		log.Println(err)
 		utils.ErrorJsonResponse(w, http.StatusInternalServerError, messages.SomethingErrors)
 		return
@@ -59,7 +59,7 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorJsonResponse(w, http.StatusBadRequest, messages.InvalidRequest)
 		return
 	}
-	result, status, err := h.userCase.Login(r.Context(), req)
+	result, status, err := h.useCase.Login(r.Context(), req)
 	if err != nil {
 		log.Println(err)
 		utils.ErrorJsonResponse(w, http.StatusInternalServerError, messages.LoginFailedInternal)
@@ -89,7 +89,7 @@ func (h *handler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorJsonResponse(w, http.StatusInternalServerError, "User not found")
 		return
 	}
-	user, err := h.userCase.GetUserInfo(r.Context(), userId.(int64))
+	user, err := h.useCase.GetUserInfo(r.Context(), userId.(int64))
 	if err != nil {
 		if errors.Is(err, Err.ErrUserNotFound) {
 			utils.ErrorJsonResponse(w, http.StatusInternalServerError, "User not found")
@@ -107,7 +107,7 @@ func (h *handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorJsonResponse(w, http.StatusBadRequest, messages.InvalidRequest)
 		return
 	}
-	newAccessToken, err := h.userCase.RefreshToken(r.Context(), req.Token)
+	newAccessToken, err := h.useCase.RefreshToken(r.Context(), req.Token)
 	if err != nil {
 		log.Println(err)
 		utils.ErrorJsonResponse(w, http.StatusInternalServerError, "Failed")

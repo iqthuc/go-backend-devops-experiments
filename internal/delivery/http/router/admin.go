@@ -9,7 +9,7 @@ import (
 
 func InitAdminRouter(r *http.ServeMux, db *sql.DB) {
 	adminRepo := admin.NewRepository(db)
-	adminUseCase := admin.NewUserCase(adminRepo)
+	adminUseCase := admin.NewUseCase(adminRepo)
 	adminHandler := admin.NewHandler(adminUseCase)
 
 	adminRouter := http.NewServeMux()

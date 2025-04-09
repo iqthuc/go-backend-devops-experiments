@@ -16,7 +16,7 @@ func IntAuthRouter(r *http.ServeMux, db *sql.DB) {
 	maker := token.NewJWTMaker(secretKey)
 
 	authRepo := auth.NewRepository(db)
-	authUseCase := auth.NewUserCase(authRepo, maker)
+	authUseCase := auth.NewUseCase(authRepo, maker)
 	authHandler := auth.NewHandler(authUseCase)
 
 	authMW := middleware.NewAuthenticator(maker)
