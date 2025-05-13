@@ -10,7 +10,7 @@ import (
 
 func InitProductRouter(r *http.ServeMux, db *sql.DB, redis *redis.Client) {
 	productRepo := product.NewRepository(db)
-	productUseCase := product.NewUserCase(productRepo, redis)
+	productUseCase := product.NewUseCase(productRepo, redis)
 	productHandler := product.NewHandler(productUseCase)
 	productRouter := http.NewServeMux()
 	productRouter.HandleFunc("GET /", productHandler.GetProducts)

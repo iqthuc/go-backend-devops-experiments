@@ -16,12 +16,12 @@ type Handler interface {
 }
 
 type handler struct {
-	userCase UserCase
+	useCase UseCase
 }
 
-func NewHandler(userCase UserCase) Handler {
+func NewHandler(useCase UseCase) Handler {
 	return &handler{
-		userCase: userCase,
+		useCase: useCase,
 	}
 }
 
@@ -104,7 +104,7 @@ func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 		SearchKey:  searchKey,
 	}
 
-	response, err := h.userCase.GetProducts(r.Context(), req)
+	response, err := h.useCase.GetProducts(r.Context(), req)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Failed to fetch products", http.StatusInternalServerError)
@@ -127,7 +127,7 @@ func (h *handler) GetProductDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productDetails, err := h.userCase.GetProductDetails(r.Context(), id)
+	productDetails, err := h.useCase.GetProductDetails(r.Context(), id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Failed to fetch products", http.StatusInternalServerError)

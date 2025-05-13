@@ -17,24 +17,24 @@ type GetProductsRequestParams struct {
 	SortBy  SortBy
 }
 
-type UserCase interface {
+type UseCase interface {
 	GetProducts(ctx context.Context, requestParams GetProductsRequestParams) (ProductsResponse, error)
 	GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error)
 }
 
-type userCase struct {
+type useCase struct {
 	repo  Repository
 	cache *redis.Client
 }
 
-func NewUserCase(repo Repository, redis *redis.Client) UserCase {
-	return &userCase{
+func NewUseCase(repo Repository, redis *redis.Client) UseCase {
+	return &useCase{
 		repo:  repo,
 		cache: redis,
 	}
 }
 
-func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsRequestParams) (ProductsResponse, error) {
+func (s *useCase) GetProducts(ctx context.Context, requestParams GetProductsRequestParams) (ProductsResponse, error) {
 	//Input validation and transformation
 	perPage := perPageDefault
 	offset := max((requestParams.page-1), 0) * perPage
@@ -99,7 +99,7 @@ func (s *userCase) GetProducts(ctx context.Context, requestParams GetProductsReq
 	return response, nil
 }
 
-func (s *userCase) GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error) {
+func (s *useCase) GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error) {
 	var data ProductDetailsResponse
 	productDetail, err := s.repo.GetProductByID(ctx, id)
 	if err != nil {

@@ -5,22 +5,22 @@ import (
 	"fmt"
 )
 
-type UserCase interface {
+type UseCase interface {
 	GetProducts(ctx context.Context, reg PaginationRequest) (PaginationResponse, error)
 	GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error)
 }
 
-type userCase struct {
+type useCase struct {
 	repo Repository
 }
 
-func NewUserCase(repo Repository) UserCase {
-	return &userCase{
+func NewUseCase(repo Repository) UseCase {
+	return &useCase{
 		repo: repo,
 	}
 }
 
-func (s *userCase) GetProducts(ctx context.Context, req PaginationRequest) (PaginationResponse, error) {
+func (s *useCase) GetProducts(ctx context.Context, req PaginationRequest) (PaginationResponse, error) {
 	offset := (req.Page - 1) * req.Limit
 
 	products, err := s.repo.GetProducts(ctx, req.Limit, offset, req.CategoryId, req.SearchKey)
@@ -52,7 +52,7 @@ func (s *userCase) GetProducts(ctx context.Context, req PaginationRequest) (Pagi
 	return response, nil
 }
 
-func (s *userCase) GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error) {
+func (s *useCase) GetProductDetails(ctx context.Context, id int) (ProductDetailsResponse, error) {
 	var data ProductDetailsResponse
 	productDetail, err := s.repo.GetProductByID(ctx, id)
 	if err != nil {

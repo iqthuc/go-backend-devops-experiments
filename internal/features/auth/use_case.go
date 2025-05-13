@@ -10,7 +10,7 @@ import (
 	"github.com/iqthuc/sport-shop/utils"
 )
 
-type UserCase interface {
+type UseCase interface {
 	RegisterUser(ctx context.Context, user *User) error
 	Login(ctx context.Context, identifier LoginRequest) (*loginResult, LoginStatus, error)
 	RefreshToken(ctx context.Context, refreshToken string) (string, error)
@@ -18,19 +18,19 @@ type UserCase interface {
 	GetUserInfo(ctx context.Context, id int64) (*getUserInfoResult, error)
 }
 
-type userCase struct {
+type useCase struct {
 	repo  Repository
 	maker token.Maker
 }
 
-func NewUserCase(repo Repository, maker token.Maker) UserCase {
-	return &userCase{
+func NewUseCase(repo Repository, maker token.Maker) UseCase {
+	return &useCase{
 		repo:  repo,
 		maker: maker,
 	}
 }
 
-func (u *userCase) RegisterUser(ctx context.Context, user *User) error {
+func (u *useCase) RegisterUser(ctx context.Context, user *User) error {
 	existingUser, err := u.repo.GetUserByUsernamOrEmail(ctx, user.username, user.email)
 	if existingUser != nil {
 		return errors.New("Email or username already in use")
@@ -43,7 +43,7 @@ func (u *userCase) RegisterUser(ctx context.Context, user *User) error {
 	return u.repo.CreateUser(ctx, user)
 }
 
-func (u *userCase) Login(ctx context.Context, rq LoginRequest) (*loginResult, LoginStatus, error) {
+func (u *useCase) Login(ctx context.Context, rq LoginRequest) (*loginResult, LoginStatus, error) {
 	// verify thông tin đăng nhập
 	// tạo và gửi về access token và refresh token
 	user, err := u.repo.GetUserByUsernamOrEmail(ctx, rq.Identifier, rq.Identifier)
@@ -84,7 +84,7 @@ func (u *userCase) Login(ctx context.Context, rq LoginRequest) (*loginResult, Lo
 	return response, LoginStatusSuccess, nil
 }
 
-func (u *userCase) GetUserInfo(ctx context.Context, id int64) (*getUserInfoResult, error) {
+func (u *useCase) GetUserInfo(ctx context.Context, id int64) (*getUserInfoResult, error) {
 	user, err := u.repo.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user info: %w ", err)
@@ -101,7 +101,7 @@ func (u *userCase) GetUserInfo(ctx context.Context, id int64) (*getUserInfoResul
 	return info, nil
 }
 
-func (u userCase) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
+func (u useCase) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
 	// xác thực token, kiểm tra token trong database
 	// xóa và tạo lại refresh token cũ trong db nếu sắp hết hạn
 	// cấp access token mới
